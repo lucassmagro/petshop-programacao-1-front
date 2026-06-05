@@ -1,10 +1,12 @@
 import express from "express";
+import cors from "cors";
 import banco from "./Banco.js";
 
 import ServicoController from "./controllers/ServicoController.js";
 import AtendimentoController from "./controllers/AtendimentoController.js";
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // Rotas de servico
