@@ -1,10 +1,10 @@
-# 🐾 Petshop Programação 1 - Sistema de Gerenciamento
+# Petshop Programação 1 - Sistema de Gerenciamento
 
 Este é um sistema web full-stack desenvolvido para gerenciamento de serviços e atendimentos de um pet shop. O projeto possui um front-end moderno, responsivo e estilizado com foco em uma experiência do usuário (UI/UX) premium, conectado a um back-end estruturado com banco de dados relacional.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 ### Front-end
 - **React** (v19) com componentes funcionais e Hooks.
@@ -21,7 +21,7 @@ Este é um sistema web full-stack desenvolvido para gerenciamento de serviços e
 
 ---
 
-## 🚀 Como Iniciar o Projeto
+## Como Iniciar o Projeto
 
 ### Pré-requisitos
 Antes de começar, você precisará ter instalado em sua máquina:
@@ -30,7 +30,7 @@ Antes de começar, você precisará ter instalado em sua máquina:
 
 ---
 
-### 1. 🗄️ Configuração do Banco de Dados
+### 1. Configuração do Banco de Dados
 
 1. Acesse o seu gerenciador de banco de dados PostgreSQL (como o pgAdmin ou terminal `psql`).
 2. Crie um novo banco de dados chamado `petshop`:
@@ -50,7 +50,7 @@ Antes de começar, você precisará ter instalado em sua máquina:
 
 ---
 
-### 2. 🔌 Iniciando o Back-end (API)
+### 2. Iniciando o Back-end (API)
 
 O back-end do projeto rodará na porta **3000** e o Sequelize criará automaticamente as tabelas necessárias no primeiro sincronismo.
 
@@ -70,7 +70,7 @@ O back-end do projeto rodará na porta **3000** e o Sequelize criará automatica
 
 ---
 
-### 3. 💻 Iniciando o Front-end (React)
+### 3. Iniciando o Front-end (React)
 
 O front-end iniciará e consumirá a API na porta **3001** (caso o back-end já esteja na porta 3000, o React perguntará se deseja rodar em outra porta; confirme com `Y`).
 
@@ -90,7 +90,7 @@ O front-end iniciará e consumirá a API na porta **3001** (caso o back-end já 
 
 ---
 
-## 🎨 Principais Melhorias de UI/UX Implementadas
+## Principais Melhorias de UI/UX Implementadas
 
 - **Landing Page**: Uma página inicial completa apresentando os serviços e o conceito do Pet Shop com design limpo e moderno.
 - **Componentes Visuais Premium**:
@@ -106,6 +106,6 @@ O front-end iniciará e consumirá a API na porta **3001** (caso o back-end já 
 
 ---
 
-## 👥 Autores
+## Autores
 - **Lucas Santos Magro** (Desenvolvimento e Integrações)
 - **Antigravity** (Assistência no Design UI/UX e Frontend)
