@@ -1,148 +1,6 @@
-# Petshop - Projeto Fullstack
+# Petshop Programação 1 — Sistema de Gerenciamento
 
-Projeto de exemplo para gerenciamento de serviços e atendimentos de um petshop, com backend em Node.js/Express + Sequelize (Postgres) e frontend em React (Create React App).
-
-## Estrutura do repositório
-
-- `back/` - código do servidor (Node.js, Express, Sequelize).
-- `front/` - aplicação cliente em React (Create React App).
-
-Arquivos importantes:
-
-- [back/Banco.js](back/Banco.js): configuração da conexão com o banco de dados.
-- [back/index.js](back/index.js): ponto de entrada do servidor.
-- [front/src/services](front/src/services): chamadas HTTP para a API.
-
-## Pré-requisitos
-
-- Node.js (recomendado >= 16) e npm
-- PostgreSQL (servidor de banco de dados)
-- Git (para clonar o repositório)
-
-## Configuração do banco de dados
-
-O backend usa Sequelize e está configurado em [back/Banco.js](back/Banco.js). Por padrão ele tenta conectar em:
-
-- database: `petshop`
-- usuário: `postgres`
-- senha: `postgres`
-- host: `localhost`
-- porta: `5432`
-
-Você tem duas opções:
-
-1. Criar o banco/usuário com essas credenciais (ex.: via `psql`) e executar o servidor.
-   - Exemplo:
-
-     ```bash
-     psql -U postgres
-     CREATE DATABASE petshop;
-     -- ajustar usuário/senha se necessário
-     ```
-
-2. Ou alterar as credenciais diretamente em [back/Banco.js](back/Banco.js) para corresponder ao seu ambiente.
-
-Observação: uma boa prática é alterar `back/Banco.js` para ler as configurações de variáveis de ambiente. Por exemplo:
-
-```js
-const banco = new Sequelize(
-  process.env.DB_NAME || "petshop",
-  process.env.DB_USER || "postgres",
-  process.env.DB_PASS || "postgres",
-  {
-    host: process.env.DB_HOST || "localhost",
-    port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
-    dialect: "postgres",
-  },
-);
-```
-
-## Rodando o backend
-
-1. Abra um terminal e entre na pasta do backend:
-
-```bash
-cd back
-```
-
-2. Instale as dependências:
-
-```bash
-npm install
-```
-
-3. Inicie o servidor:
-
-```bash
-node index.js
-```
-
-O servidor inicia na porta `3000` (conforme `back/index.js`). O Sequelize fará o `sync()` e criará as tabelas a partir dos modelos se necessário.
-
-## Rodando o frontend
-
-1. Em outro terminal, entre na pasta do frontend:
-
-```bash
-cd front
-```
-
-2. Instale as dependências:
-
-```bash
-npm install
-```
-
-3. Inicie a aplicação React:
-
-```bash
-npm start
-```
-
-Por padrão o Create React App usa a porta `3000`. Se o backend já estiver usando a `3000`, o CRA irá perguntar se você quer rodar em outra porta (por exemplo `3001`). Para forçar uma porta diferente no Windows PowerShell:
-
-```powershell
-#$env:PORT = 3001; npm start
-```
-
-Ou no Windows CMD:
-
-```cmd
-set PORT=3001 && npm start
-```
-
-O frontend faz requisições para a API em `http://localhost:3000` (veja `front/src/services/*Service.js`). Se você mudar a porta do backend, atualize os arquivos de serviço ou use uma variável de ambiente.
-
-## Scripts úteis
-
-- Backend: dentro de `back/` você pode executar `node index.js` para iniciar.
-- Frontend: dentro de `front/` execute `npm start`, `npm run build` para produção.
-
-## Observações e dicas
-
-- As credenciais do banco estão em claro no código — considere usar variáveis de ambiente ou um arquivo `.env` e não comitar segredos.
-- Se preferir, adicione um script `start` no `back/package.json` para facilitar (`"start": "node index.js"`).
-- O Sequelize está configurado para `sync()` no startup — em produção, avalie migrações em vez de `sync()`.
-
-## Contribuição
-
-1. Fork o repositório
-2. Crie uma branch com sua alteração: `git checkout -b feature/minha-melhora`
-3. Faça commits claros e faça um Pull Request
-
-## Licença
-
-Verifique se há um arquivo de licença no repositório ou adicione uma conforme necessário.
-
----
-
-Se quiser, eu posso:
-
-- adicionar um `start` script em `back/package.json` para facilitar;
-- alterar `back/Banco.js` para ler variáveis de ambiente e adicionar um exemplo de `.env`;
-- criar instruções de deploy (Heroku, Railway, Vercel) — diga qual serviço prefere.# Petshop Programação 1 - Sistema de Gerenciamento
-
-Este é um sistema web full-stack desenvolvido para gerenciamento de serviços e atendimentos de um pet shop. O projeto possui um front-end moderno, responsivo e estilizado com foco em uma experiência do usuário (UI/UX) premium, conectado a um back-end estruturado com banco de dados relacional.
+Sistema web full-stack desenvolvido para gerenciamento de serviços e atendimentos de um pet shop. O projeto possui um front-end moderno, responsivo e estilizado com foco em uma experiência do usuário (UI/UX) premium, conectado a um back-end estruturado com banco de dados relacional.
 
 ---
 
@@ -150,109 +8,269 @@ Este é um sistema web full-stack desenvolvido para gerenciamento de serviços e
 
 ### Front-end
 
-- **React** (v19) com componentes funcionais e Hooks.
-- **React Router DOM** (v7) para o roteamento interno.
-- **Axios** para consumo da API RESTful.
-- **Bootstrap 5 & Bootstrap Icons** para auxílio de grid e ícones modernos.
-- **React Toastify** para notificações interativas e bonitas de sucesso/erro.
-- **Custom CSS** com paleta HSL customizada, animações, e suporte total a dispositivos móveis.
+- **React** (v19) com componentes funcionais e Hooks
+- **React Router DOM** (v7) para roteamento interno
+- **Axios** para consumo da API RESTful
+- **Bootstrap 5 & Bootstrap Icons** para auxílio de grids e ícones modernos
+- **React Toastify** para notificações interativas de sucesso/erro
+- **Custom CSS** com paleta HSL customizada, animações fluidas e suporte total a dispositivos móveis
 
 ### Back-end
 
-- **Node.js** com **Express** para criação da API.
-- **Sequelize ORM** para abstração e comunicação com o banco de dados.
-- **PostgreSQL** como banco de dados relacional.
+- **Node.js** com **Express** para criação da API REST
+- **Sequelize ORM** para abstração e comunicação com o banco de dados
+- **PostgreSQL** como banco de dados relacional
+- **CORS** habilitado para comunicação segura entre front-end e back-end
+
+---
+
+## Estrutura do Repositório
+
+```text
+petshop-programacao-1/
+├── back/
+│   ├── controllers/
+│   │   ├── AtendimentoController.js
+│   │   └── ServicoController.js
+│   ├── models/
+│   │   ├── Atendimento.js
+│   │   └── Servico.js
+│   ├── Banco.js
+│   ├── index.js
+│   └── package.json
+├── front/
+│   ├── public/
+│   │   ├── favicon.png (Ícone de patinha personalizado)
+│   │   └── index.html
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ConfirmModal.js (Modal customizado para exclusão)
+│   │   │   ├── Footer.js (Rodapé padrão)
+│   │   │   ├── Navbar.js (Menu horizontal responsivo)
+│   │   │   └── Sidebar.js (Menu lateral para navegação rápida)
+│   │   ├── pages/
+│   │   │   ├── atendimento/
+│   │   │   │   ├── AtendimentoForm.js
+│   │   │   │   └── AtendimentoList.js
+│   │   │   ├── servico/
+│   │   │   │   ├── ServicoForm.js
+│   │   │   │   └── ServicoList.js
+│   │   │   └── LandingPage.js (Página de entrada moderna)
+│   │   ├── services/
+│   │   │   ├── atendimentoService.js
+│   │   │   └── servicoService.js
+│   │   ├── App.css (Estilização geral e temas HSL)
+│   │   ├── App.js
+│   │   └── index.js
+│   └── package.json
+├── petshop.sql (Dump do banco de dados com estrutura e registros de teste)
+└── README.md
+```
+
+---
+
+## Pré-requisitos
+
+Antes de começar, certifique-se de ter instalado em sua máquina:
+
+| Software   | Versão Mínima  | Como Verificar   | Download Oficial        |
+| ---------- | -------------- | ---------------- | ----------------------- |
+| Node.js    | 16 ou superior | `node -v`        | nodejs.org              |
+| PostgreSQL | Qualquer       | `psql --version` | postgresql.org/download |
+| Git        | Qualquer       | `git --version`  | git-scm.com             |
 
 ---
 
 ## Como Iniciar o Projeto
 
-### Pré-requisitos
+### Passo 1 — Clonar o Repositório
 
-Antes de começar, você precisará ter instalado em sua máquina:
-
-- **Node.js** (v16 ou superior)
-- **PostgreSQL** rodando localmente
-
----
-
-### 1. Configuração do Banco de Dados
-
-1. Acesse o seu gerenciador de banco de dados PostgreSQL (como o pgAdmin ou terminal `psql`).
-2. Crie um novo banco de dados chamado `petshop`:
-   ```sql
-   CREATE DATABASE petshop;
-   ```
-3. O arquivo de configuração de banco de dados está localizado em `back/Banco.js`. Certifique-se de que os dados de conexão correspondem às suas credenciais do PostgreSQL:
-   ```javascript
-   const banco = new Sequelize("petshop", "seu_usuario", "sua_senha", {
-     host: "localhost",
-     port: 5432,
-     dialect: "postgres",
-     // ...
-   });
-   ```
-   _(O padrão configurado é usuário `postgres` e senha `postgres`)_.
+```bash
+git clone https://github.com/lucassmagro/petshop-programacao-1
+cd petshop-programacao-1
+```
 
 ---
 
-### 2. Iniciando o Back-end (API)
+### Passo 2 — Configurar o Banco de Dados
 
-O back-end do projeto rodará na porta **3000** e o Sequelize criará automaticamente as tabelas necessárias no primeiro sincronismo.
+Acesse o PostgreSQL e crie o banco de dados:
 
-1. Abra o terminal e navegue até a pasta `back`:
+**Via terminal:**
+
+```bash
+psql -U postgres -c "CREATE DATABASE petshop;"
+```
+
+**Via pgAdmin:**
+
+1. No painel esquerdo, clique com o botão direito em **Databases**
+2. Selecione **Create → Database**
+3. Em **Database**, digite `petshop`
+4. Clique em **Save**
+
+O arquivo de configuração da conexão está localizado em `back/Banco.js`. O padrão configurado é:
+
+```javascript
+const banco = new Sequelize("petshop", "postgres", "postgres", {
+  host: "localhost",
+  port: 5432,
+  dialect: "postgres",
+});
+```
+
+> Nota: Se as suas credenciais locais do PostgreSQL forem diferentes (usuário ou senha), edite este arquivo antes de prosseguir.
+
+---
+
+### Passo 3 — Importar os Dados de Exemplo
+
+Para popular o banco de dados com tabelas e registros iniciais de teste, utilize o arquivo `petshop.sql` disponível na raiz do repositório.
+
+**Via terminal:**
+
+```bash
+psql -U postgres -d petshop -f petshop.sql
+```
+
+**Via pgAdmin:**
+
+1. No painel esquerdo, expanda as bases e clique com o botão direito no banco `petshop`
+2. Selecionar **Query Tool**
+3. Abra o arquivo `petshop.sql` na ferramenta de consulta ou cole seu conteúdo
+4. Clique em **Execute/Refresh** (F5) para rodar o script e popular o banco
+
+---
+
+### Passo 4 — Iniciar o Back-end
+
+O servidor rodará na porta **3000**. O Sequelize sincronizará automaticamente as models com o banco de dados.
+
+```bash
+cd back
+npm install
+node index.js
+```
+
+Você deverá ver a mensagem no terminal:
+
+```text
+Servidor rodando na porta 3000
+```
+
+---
+
+### Passo 5 — Iniciar o Front-end
+
+O front-end consome a API na porta `3000`. O React iniciará por padrão em uma porta secundária (geralmente `3001`) caso a porta `3000` já esteja em uso pelo back-end. Confirme com `Y` no terminal se for solicitado.
+
+```bash
+cd front
+npm install
+npm start
+```
+
+O navegador abrirá automaticamente no endereço `http://localhost:3001`.
+
+> **Forçar porta 3001 manualmente (opcional):**
+>
+> No Windows (PowerShell):
+> ```powershell
+> $env:PORT = 3001; npm start
+> ```
+>
+> No Windows (Prompt de Comando CMD):
+> ```cmd
+> set PORT=3001 && npm start
+> ```
+
+---
+
+## Endpoints da API
+
+### Serviços (`/servico`)
+
+| Método | URL          | Body (JSON)                                          | Descrição          |
+| ------ | ------------ | ---------------------------------------------------- | ------------------ |
+| GET    | /servico     | —                                                    | Lista todos        |
+| GET    | /servico/:id | —                                                    | Busca por ID       |
+| POST   | /servico     | `{ "descricao": "", "preco": 0, "duracaoHoras": 0 }` | Cria novo serviço  |
+| PUT    | /servico/:id | `{ "descricao": "", "preco": 0, "duracaoHoras": 0 }` | Atualiza um serviço|
+| DELETE | /servico/:id | —                                                    | Remove um serviço  |
+
+### Atendimentos (`/atendimento`)
+
+| Método | URL              | Body (JSON)                                         | Descrição              |
+| ------ | ---------------- | --------------------------------------------------- | ---------------------- |
+| GET    | /atendimento     | —                                                   | Lista todos            |
+| GET    | /atendimento/:id | —                                                   | Busca por ID           |
+| POST   | /atendimento     | `{ "nomePet": "", "nomeDono": "", "idservico": 1 }` | Cria novo atendimento  |
+| PUT    | /atendimento/:id | `{ "nomePet": "", "nomeDono": "", "idservico": 1 }` | Atualiza um atendimento|
+| DELETE | /atendimento/:id | —                                                   | Remove um atendimento  |
+
+> **Regra de Negócio Importante:** Ao cadastrar ou editar um atendimento, os campos `valorTotal` e `tempoEstimado` são calculados e salvos automaticamente pelo back-end baseando-se no serviço vinculado (`idservico`). Evite enviá-los no corpo da requisição.
+
+---
+
+## Principais Funcionalidades
+
+- **Gestão Completa de Serviços**: Cadastro, edição, visualização e remoção de serviços com controle de preço e duração.
+- **Gestão Completa de Atendimentos**: Agendamento vinculando o animal (pet), o dono e o tipo de serviço.
+- **Cálculo Automático**: Totalização de valores e estimativa de tempo gerados automaticamente no banco através da API.
+- **Anotações e Notificações Visuais**: Alertas de sucesso/erro integrados com `react-toastify` para guiar as ações do usuário.
+- **Interface Segura (Confirmação)**: Modais customizados que pedem dupla confirmação antes de ações destrutivas (exclusões).
+- **Feedback de Carregamento**: Animações de esqueleto (Skeleton load/Shimmer effect) que evitam telas em branco durante chamadas de API.
+- **Visual Moderno e Responsivo**: Layout construído com técnicas modernas de CSS, adaptável para celulares, tablets e monitores desktop.
+
+---
+
+## Configurando em Outro Computador
+
+Para rodar o projeto em um ambiente limpo para apresentação:
+
+1. Instale o Node.js, PostgreSQL e Git.
+2. Clone o repositório:
+   ```bash
+   git clone https://github.com/lucassmagro/petshop-programacao-1
+   cd petshop-programacao-1
+   ```
+3. Crie a base de dados:
+   ```bash
+   psql -U postgres -c "CREATE DATABASE petshop;"
+   ```
+4. Importe o dump de dados:
+   ```bash
+   psql -U postgres -d petshop -f petshop.sql
+   ```
+5. Acesse a pasta `back`, instale as dependências e inicie o servidor:
    ```bash
    cd back
-   ```
-2. Instale as dependências:
-   ```bash
    npm install
-   ```
-3. Inicie o servidor:
-   ```bash
    node index.js
    ```
-   _Você deverá ver a mensagem: `Servidor rodando na porta 3000`_.
-
----
-
-### 3. Iniciando o Front-end (React)
-
-O front-end iniciará e consumirá a API na porta **3001** (caso o back-end já esteja na porta 3000, o React perguntará se deseja rodar em outra porta; confirme com `Y`).
-
-1. Abra um novo terminal e navegue até a pasta `front`:
+6. Em outro terminal, acesse `front`, instale as dependências e inicie a interface:
    ```bash
    cd front
-   ```
-2. Instale as dependências:
-   ```bash
    npm install
-   ```
-3. Inicie a aplicação:
-   ```bash
    npm start
    ```
-4. O navegador abrirá automaticamente o projeto no endereço `http://localhost:3001`.
 
 ---
 
-## Principais Melhorias de UI/UX Implementadas
+## Observações
 
-- **Landing Page**: Uma página inicial completa apresentando os serviços e o conceito do Pet Shop com design limpo e moderno.
-- **Componentes Visuais Premium**:
-  - **Navbar Horizontal**: Fluida, alinhada à direita e responsiva para mobile.
-  - **Sidebar de Navegação**: Para acesso rápido a todas as áreas.
-  - **Footer Customizado**: Com uma assinatura estilosa.
-  - **Favicon Personalizado**: Uma patinha de cachorro substituindo o ícone padrão do React.
-- **Melhorias de Usabilidade**:
-  - **Shimmer Effect (Skeleton loading)**: Animação suave de carregamento nas tabelas de dados, melhorando a percepção de performance.
-  - **Modal de Confirmação**: Substituição do `window.confirm` padrão por um modal moderno e estilizado para evitar deleções acidentais.
-  - **Feedbacks Visuais (Toastify)**: Notificações elegantes de sucesso e erro ao criar, editar ou excluir registros.
-- **Responsividade Total**: Layout adaptável a qualquer tela (desktops, tablets e celulares).
+- **Segurança de Credenciais**: As chaves do banco de dados estão expostas em `back/Banco.js` para simplificar fins acadêmicos. Em ambientes de produção, recomenda-se o uso de `.env` para carregar dados confidenciais dinamicamente.
+- **Gerenciamento de Tabelas**: O Sequelize utiliza `sync()` para autossincronização de tabelas em tempo de desenvolvimento. Para produção, é recomendado utilizar Migrations.
+- **Integração de Endereços**: O front-end aponta requisições para `http://localhost:3000`. Se a porta padrão do back-end for alterada, lembre-se de reconfigurar a URL correspondente na pasta `front/src/services/`.
 
 ---
 
 ## Autores
 
-- **Lucas Santos Magro** (Desenvolvimento e Integrações)
-- **Antigravity** (Assistência no Design UI/UX e Frontend)
+- **Lucas Santos Magro** — Desenvolvimento e integrações
+
+---
+
+## Licença
+
+Este projeto foi desenvolvido para fins acadêmicos na disciplina de Programação I — Sistemas de Informação — Unoesc.
