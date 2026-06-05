@@ -1,4 +1,146 @@
-# Petshop Programação 1 - Sistema de Gerenciamento
+# Petshop - Projeto Fullstack
+
+Projeto de exemplo para gerenciamento de serviços e atendimentos de um petshop, com backend em Node.js/Express + Sequelize (Postgres) e frontend em React (Create React App).
+
+## Estrutura do repositório
+
+- `back/` - código do servidor (Node.js, Express, Sequelize).
+- `front/` - aplicação cliente em React (Create React App).
+
+Arquivos importantes:
+
+- [back/Banco.js](back/Banco.js): configuração da conexão com o banco de dados.
+- [back/index.js](back/index.js): ponto de entrada do servidor.
+- [front/src/services](front/src/services): chamadas HTTP para a API.
+
+## Pré-requisitos
+
+- Node.js (recomendado >= 16) e npm
+- PostgreSQL (servidor de banco de dados)
+- Git (para clonar o repositório)
+
+## Configuração do banco de dados
+
+O backend usa Sequelize e está configurado em [back/Banco.js](back/Banco.js). Por padrão ele tenta conectar em:
+
+- database: `petshop`
+- usuário: `postgres`
+- senha: `postgres`
+- host: `localhost`
+- porta: `5432`
+
+Você tem duas opções:
+
+1. Criar o banco/usuário com essas credenciais (ex.: via `psql`) e executar o servidor.
+   - Exemplo:
+
+     ```bash
+     psql -U postgres
+     CREATE DATABASE petshop;
+     -- ajustar usuário/senha se necessário
+     ```
+
+2. Ou alterar as credenciais diretamente em [back/Banco.js](back/Banco.js) para corresponder ao seu ambiente.
+
+Observação: uma boa prática é alterar `back/Banco.js` para ler as configurações de variáveis de ambiente. Por exemplo:
+
+```js
+const banco = new Sequelize(
+  process.env.DB_NAME || "petshop",
+  process.env.DB_USER || "postgres",
+  process.env.DB_PASS || "postgres",
+  {
+    host: process.env.DB_HOST || "localhost",
+    port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
+    dialect: "postgres",
+  },
+);
+```
+
+## Rodando o backend
+
+1. Abra um terminal e entre na pasta do backend:
+
+```bash
+cd back
+```
+
+2. Instale as dependências:
+
+```bash
+npm install
+```
+
+3. Inicie o servidor:
+
+```bash
+node index.js
+```
+
+O servidor inicia na porta `3000` (conforme `back/index.js`). O Sequelize fará o `sync()` e criará as tabelas a partir dos modelos se necessário.
+
+## Rodando o frontend
+
+1. Em outro terminal, entre na pasta do frontend:
+
+```bash
+cd front
+```
+
+2. Instale as dependências:
+
+```bash
+npm install
+```
+
+3. Inicie a aplicação React:
+
+```bash
+npm start
+```
+
+Por padrão o Create React App usa a porta `3000`. Se o backend já estiver usando a `3000`, o CRA irá perguntar se você quer rodar em outra porta (por exemplo `3001`). Para forçar uma porta diferente no Windows PowerShell:
+
+```powershell
+#$env:PORT = 3001; npm start
+```
+
+Ou no Windows CMD:
+
+```cmd
+set PORT=3001 && npm start
+```
+
+O frontend faz requisições para a API em `http://localhost:3000` (veja `front/src/services/*Service.js`). Se você mudar a porta do backend, atualize os arquivos de serviço ou use uma variável de ambiente.
+
+## Scripts úteis
+
+- Backend: dentro de `back/` você pode executar `node index.js` para iniciar.
+- Frontend: dentro de `front/` execute `npm start`, `npm run build` para produção.
+
+## Observações e dicas
+
+- As credenciais do banco estão em claro no código — considere usar variáveis de ambiente ou um arquivo `.env` e não comitar segredos.
+- Se preferir, adicione um script `start` no `back/package.json` para facilitar (`"start": "node index.js"`).
+- O Sequelize está configurado para `sync()` no startup — em produção, avalie migrações em vez de `sync()`.
+
+## Contribuição
+
+1. Fork o repositório
+2. Crie uma branch com sua alteração: `git checkout -b feature/minha-melhora`
+3. Faça commits claros e faça um Pull Request
+
+## Licença
+
+Verifique se há um arquivo de licença no repositório ou adicione uma conforme necessário.
+
+---
+
+Se quiser, eu posso:
+
+- adicionar um `start` script em `back/package.json` para facilitar;
+- alterar `back/Banco.js` para ler variáveis de ambiente e adicionar um exemplo de `.env`;
+- criar instruções de deploy (Heroku, Railway, Vercel) — diga qual serviço prefere.# Petshop Programação 1 - Sistema de Gerenciamento
 
 Este é um sistema web full-stack desenvolvido para gerenciamento de serviços e atendimentos de um pet shop. O projeto possui um front-end moderno, responsivo e estilizado com foco em uma experiência do usuário (UI/UX) premium, conectado a um back-end estruturado com banco de dados relacional.
 
@@ -7,6 +149,7 @@ Este é um sistema web full-stack desenvolvido para gerenciamento de serviços e
 ## Tecnologias Utilizadas
 
 ### Front-end
+
 - **React** (v19) com componentes funcionais e Hooks.
 - **React Router DOM** (v7) para o roteamento interno.
 - **Axios** para consumo da API RESTful.
@@ -15,6 +158,7 @@ Este é um sistema web full-stack desenvolvido para gerenciamento de serviços e
 - **Custom CSS** com paleta HSL customizada, animações, e suporte total a dispositivos móveis.
 
 ### Back-end
+
 - **Node.js** com **Express** para criação da API.
 - **Sequelize ORM** para abstração e comunicação com o banco de dados.
 - **PostgreSQL** como banco de dados relacional.
@@ -24,7 +168,9 @@ Este é um sistema web full-stack desenvolvido para gerenciamento de serviços e
 ## Como Iniciar o Projeto
 
 ### Pré-requisitos
+
 Antes de começar, você precisará ter instalado em sua máquina:
+
 - **Node.js** (v16 ou superior)
 - **PostgreSQL** rodando localmente
 
@@ -46,7 +192,7 @@ Antes de começar, você precisará ter instalado em sua máquina:
      // ...
    });
    ```
-   *(O padrão configurado é usuário `postgres` e senha `postgres`)*.
+   _(O padrão configurado é usuário `postgres` e senha `postgres`)_.
 
 ---
 
@@ -66,7 +212,7 @@ O back-end do projeto rodará na porta **3000** e o Sequelize criará automatica
    ```bash
    node index.js
    ```
-   *Você deverá ver a mensagem: `Servidor rodando na porta 3000`*.
+   _Você deverá ver a mensagem: `Servidor rodando na porta 3000`_.
 
 ---
 
@@ -107,5 +253,6 @@ O front-end iniciará e consumirá a API na porta **3001** (caso o back-end já 
 ---
 
 ## Autores
+
 - **Lucas Santos Magro** (Desenvolvimento e Integrações)
 - **Antigravity** (Assistência no Design UI/UX e Frontend)
