@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   criarAtendimento,
   buscarAtendimento,
   atualizarAtendimento,
+  listarAtendimentos,
 } from "../../services/atendimentoService";
 import { listarServicos } from "../../services/servicoService";
 
@@ -24,13 +25,19 @@ function AtendimentoForm() {
     idservico: "",
   });
   const [servicos, setServicos] = useState([]);
+  const [atendimentos, setAtendimentos] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Carrega lista de serviços para o select
     listarServicos()
-      .then((res) => setServicos(res.data))
+      .then((res) => setServicos(res.data || []))
       .catch(() => toast.error("Erro ao carregar serviços!"));
+
+    // Carrega últimos atendimentos para o sidebar
+    listarAtendimentos()
+      .then((res) => setAtendimentos(res.data || []))
+      .catch(() => {});
 
     // Se for edição, carrega dados do atendimento
     if (id) {
@@ -47,6 +54,20 @@ function AtendimentoForm() {
 
     setLoading(false);
   }, [id]);
+
+  // Mapa de ID → descrição do serviço para lookup no sidebar
+  const servicoMap = useMemo(() => {
+    const map = {};
+    servicos.forEach((s) => {
+      map[s.id] = s.descricao;
+    });
+    return map;
+  }, [servicos]);
+
+  const totalAcumulado = useMemo(
+    () => atendimentos.reduce((acc, a) => acc + Number(a.valorTotal || 0), 0),
+    [atendimentos],
+  );
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -70,7 +91,7 @@ function AtendimentoForm() {
 
   if (loading) {
     return (
-      <div className="page-card">
+      <div className="page">
         <div className="skeleton-row"></div>
         <div className="skeleton-row"></div>
         <div className="skeleton-row"></div>
@@ -79,7 +100,7 @@ function AtendimentoForm() {
   }
 
   return (
-    <div className="page-card">
+    <div className="page">
       <nav className="crumbs">
         <button
           type="button"
@@ -98,68 +119,110 @@ function AtendimentoForm() {
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="form">
-        <div className="field">
-          <label className="field-label">Nome do pet</label>
-          <input
-            name="nomePet"
-            value={form.nomePet}
-            onChange={handleChange}
-            className="input"
-            required
-          />
+      <div className="form-layout">
+        {/* Coluna esquerda — formulário */}
+        <div className="form-layout__main">
+          <form onSubmit={handleSubmit} className="form">
+            <div className="field">
+              <label className="field-label">Nome do pet</label>
+              <input
+                name="nomePet"
+                value={form.nomePet}
+                onChange={handleChange}
+                className="input"
+                required
+              />
+            </div>
+
+            <div className="field">
+              <label className="field-label">Nome do dono</label>
+              <input
+                name="nomeDono"
+                value={form.nomeDono}
+                onChange={handleChange}
+                className="input"
+                required
+              />
+            </div>
+
+            <div className="field">
+              <label className="field-label">Serviço</label>
+              <select
+                name="idservico"
+                value={form.idservico}
+                onChange={handleChange}
+                className="select"
+                required
+              >
+                <option value="">Selecione um serviço</option>
+                {servicos.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.descricao} — {formatCurrency(s.preco)} ({s.duracaoHoras}h)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="info-block">
+              O valor total e o tempo estimado são calculados automaticamente
+              com base no serviço selecionado.
+            </div>
+
+            <div className="form-actions" style={{ marginTop: 20 }}>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => navigate("/atendimentos")}
+              >
+                Cancelar
+              </button>
+              <button type="submit" className="btn-primary">
+                Salvar
+              </button>
+            </div>
+          </form>
         </div>
 
-        <div className="field">
-          <label className="field-label">Nome do dono</label>
-          <input
-            name="nomeDono"
-            value={form.nomeDono}
-            onChange={handleChange}
-            className="input"
-            required
-          />
+        {/* Coluna direita — últimos atendimentos */}
+        <div className="form-layout__sidebar">
+          <h3 className="sidebar-section-title">Últimos atendimentos</h3>
+          {atendimentos.length === 0 ? (
+            <p style={{ fontSize: 12, color: "var(--color-text-muted)" }}>
+              Nenhum atendimento registrado ainda.
+            </p>
+          ) : (
+            <>
+              <div className="table-responsive">
+                <table className="data-table table-compact">
+                  <thead>
+                    <tr>
+                      <th>Pet</th>
+                      <th>Serviço</th>
+                      <th className="col-num">Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {atendimentos.slice(0, 8).map((a) => (
+                      <tr key={a.id}>
+                        <td>{a.nomePet}</td>
+                        <td style={{ color: "var(--color-text-secondary)" }}>
+                          {servicoMap[a.idservico] || `#${a.idservico}`}
+                        </td>
+                        <td className="col-num">
+                          <span className="amount">{formatCurrency(a.valorTotal)}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="sidebar-total">
+                Total acumulado: <strong>{formatCurrency(totalAcumulado)}</strong>
+              </p>
+            </>
+          )}
         </div>
-
-        <div className="field">
-          <label className="field-label">Serviço</label>
-          <select
-            name="idservico"
-            value={form.idservico}
-            onChange={handleChange}
-            className="select"
-            required
-          >
-            <option value="">Selecione um serviço</option>
-            {servicos.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.descricao} — {formatCurrency(s.preco)} ({s.duracaoHoras}h)
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="notice">
-          <i className="bi bi-info-circle"></i>
-          <span>
-            O valor total e o tempo estimado são calculados automaticamente
-            com base no serviço selecionado.
-          </span>
-        </div>
-
-        <div className="form-actions" style={{ marginTop: 20 }}>
-          <button
-            type="button"
-            className="ui-btn ui-btn--secondary"
-            onClick={() => navigate("/atendimentos")}
-          >
-            Cancelar
-          </button>
-          <button type="submit" className="ui-btn ui-btn--primary">
-            <i className="bi bi-check-lg"></i> Salvar
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 }

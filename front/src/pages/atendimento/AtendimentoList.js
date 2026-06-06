@@ -5,6 +5,7 @@ import {
   listarAtendimentos,
   deletarAtendimento,
 } from "../../services/atendimentoService";
+import { listarServicos } from "../../services/servicoService";
 import ConfirmModal from "../../components/ConfirmModal";
 
 function formatDuration(h) {
@@ -24,6 +25,7 @@ function formatCurrency(v) {
 
 function AtendimentoList() {
   const [atendimentos, setAtendimentos] = useState([]);
+  const [servicos, setServicos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -35,14 +37,26 @@ function AtendimentoList() {
 
   const carregar = async () => {
     try {
-      const res = await listarAtendimentos();
-      setAtendimentos(res.data);
+      const [resAtend, resServ] = await Promise.all([
+        listarAtendimentos(),
+        listarServicos(),
+      ]);
+      setAtendimentos(resAtend.data);
+      setServicos(resServ.data || []);
     } catch (err) {
       toast.error("Erro ao carregar atendimentos!");
     } finally {
       setLoading(false);
     }
   };
+
+  const servicoMap = useMemo(() => {
+    const map = {};
+    servicos.forEach((s) => {
+      map[s.id] = s.descricao;
+    });
+    return map;
+  }, [servicos]);
 
   const handleDeletar = (id) => {
     setDeleteId(id);
@@ -78,7 +92,7 @@ function AtendimentoList() {
   );
 
   return (
-    <div className="page-card">
+    <div className="page">
       <div className="page-header">
         <div>
           <h1 className="page-title">Atendimentos</h1>
@@ -86,8 +100,8 @@ function AtendimentoList() {
             Registro dos atendimentos realizados no pet shop.
           </p>
         </div>
-        <Link to="/atendimento/novo" className="ui-btn ui-btn--primary">
-          <i className="bi bi-plus-lg"></i> Novo atendimento
+        <Link to="/atendimento/novo" className="btn-primary">
+          Novo atendimento
         </Link>
       </div>
 
@@ -118,7 +132,6 @@ function AtendimentoList() {
         </div>
       ) : atendimentos.length === 0 ? (
         <div className="empty-state">
-          <i className="bi bi-inbox"></i>
           <p className="empty-state__title">Nenhum atendimento cadastrado.</p>
           <p className="empty-state__hint">
             Clique em "Novo atendimento" para adicionar o primeiro registro.
@@ -126,7 +139,6 @@ function AtendimentoList() {
         </div>
       ) : filtrados.length === 0 ? (
         <div className="empty-state">
-          <i className="bi bi-search"></i>
           <p className="empty-state__title">Nenhum resultado para "{busca}".</p>
         </div>
       ) : (
@@ -134,13 +146,13 @@ function AtendimentoList() {
           <table className="data-table">
             <thead>
               <tr>
-                <th style={{ width: 70 }}>Código</th>
+                <th style={{ width: 60 }}>Cód.</th>
                 <th>Pet</th>
                 <th>Dono</th>
                 <th>Serviço</th>
                 <th className="col-num">Valor total</th>
                 <th className="col-num">Tempo est.</th>
-                <th className="col-actions">Ações</th>
+                <th className="col-actions" style={{ width: 120 }}>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -149,32 +161,31 @@ function AtendimentoList() {
                   <td>
                     <span className="id-ref">#{a.id}</span>
                   </td>
-                  <td>{a.nomePet}</td>
-                  <td>{a.nomeDono}</td>
-                  <td>
-                    <span className="id-ref">#{a.idservico}</span>
+                  <td style={{ fontWeight: 500, color: "var(--color-text-primary)" }}>{a.nomePet}</td>
+                  <td style={{ color: "var(--color-text-secondary)" }}>{a.nomeDono}</td>
+                  <td style={{ color: "var(--color-text-secondary)" }}>
+                    {servicoMap[a.idservico] || `Serviço #${a.idservico}`}
                   </td>
                   <td className="col-num">
                     <span className="amount">
                       {formatCurrency(a.valorTotal)}
                     </span>
                   </td>
-                  <td className="col-num">{formatDuration(a.tempoEstimado)}</td>
+                  <td className="col-num" style={{ color: "var(--color-text-secondary)" }}>{formatDuration(a.tempoEstimado)}</td>
                   <td className="col-actions">
-                    <div className="row-actions">
-                      <Link
-                        to={`/atendimento/editar/${a.id}`}
-                        className="ui-btn ui-btn--secondary ui-btn--sm"
-                      >
-                        <i className="bi bi-pencil"></i> Editar
-                      </Link>
-                      <button
-                        onClick={() => handleDeletar(a.id)}
-                        className="ui-btn ui-btn--danger ui-btn--sm"
-                      >
-                        <i className="bi bi-trash3"></i> Excluir
-                      </button>
-                    </div>
+                    <Link
+                      to={`/atendimento/editar/${a.id}`}
+                      className="btn-link"
+                    >
+                      Editar
+                    </Link>
+                    <span className="action-separator">·</span>
+                    <button
+                      onClick={() => handleDeletar(a.id)}
+                      className="btn-link btn-link-danger"
+                    >
+                      Excluir
+                    </button>
                   </td>
                 </tr>
               ))}

@@ -19,11 +19,10 @@ function formatCurrency(v) {
 }
 
 const fluxo = [
-  { icon: "bi-list-check", title: "Cadastro do serviço", desc: "Defina descrição, preço e duração." },
-  { icon: "bi-journal-plus", title: "Registro do atendimento", desc: "Informe pet, dono e serviço prestado." },
-  { icon: "bi-calculator", title: "Cálculo automático", desc: "Valor total e tempo estimado gerados pelo sistema." },
-  { icon: "bi-clock-history", title: "Histórico", desc: "Consulta dos atendimentos realizados." },
-  { icon: "bi-check2-circle", title: "Finalização", desc: "Atendimento concluído e contabilizado." },
+  { title: "Cadastro", desc: "Defina descrição e preço.", active: false },
+  { title: "Atendimento", desc: "Informe pet e dono.", active: true },
+  { title: "Cálculo", desc: "Valor total gerado.", active: false },
+  { title: "Finalização", desc: "Serviço concluído.", active: false },
 ];
 
 function LandingPage() {
@@ -38,7 +37,7 @@ function LandingPage() {
         setAtendimentos(ra.data || []);
       })
       .catch(() => {
-        /* falha silenciosa no portal; as telas próprias tratam o erro */
+        /* falha silenciosa no portal */
       })
       .finally(() => setLoading(false));
   }, []);
@@ -52,269 +51,303 @@ function LandingPage() {
 
   return (
     <div className="page home">
-      {/* ── Identificação do sistema ── */}
-      <div className="home__intro">
-        <h1 className="page-title">Painel operacional</h1>
-        <p className="home__lead">
-          Sistema de gestão para controle de <strong>serviços</strong> e{" "}
-          <strong>atendimentos</strong> do pet shop. Utilizado por atendentes,
-          recepcionistas e responsáveis pelos serviços para registrar o
-          trabalho do dia a dia e acompanhar o histórico de atendimentos.
-        </p>
+      {/* ── Cabeçalho do painel ── */}
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">PetShop</h1>
+          <p className="page-description">
+            Visão geral e controle rápido de serviços e atendimentos.
+          </p>
+        </div>
       </div>
 
-      <div className="home__grid">
-        {/* ── Coluna principal ── */}
-        <div className="home__main">
-          {/* Serviços disponíveis */}
-          <section className="panel">
-            <div className="panel__head">
-              <h2>Serviços disponíveis</h2>
-              <Link to="/servicos" className="panel__link">
-                Gerenciar serviços
-              </Link>
-            </div>
-            <div className="panel__body">
-              {loading ? (
-                <div>
-                  <div className="skeleton-row"></div>
-                  <div className="skeleton-row"></div>
-                </div>
-              ) : totalServicos === 0 ? (
-                <p className="home__muted">
-                  Nenhum serviço cadastrado.{" "}
-                  <Link to="/servico/novo" className="panel__link">
+      <div className="home__row">
+        {/* Serviços disponíveis */}
+        <section className="home__panel home__panel--main">
+          <div className="home__panel-head">
+            <h2 className="section-label">Serviços disponíveis</h2>
+            <Link to="/servicos" className="home__manage-link">
+              Ver todos →
+            </Link>
+          </div>
+          <div className="home__panel-body">
+            {loading ? (
+              <div>
+                <div className="skeleton-row"></div>
+                <div className="skeleton-row"></div>
+              </div>
+            ) : totalServicos === 0 ? (
+              <div className="empty-state">
+                <p className="empty-state__title">Nenhum serviço cadastrado.</p>
+                <p className="empty-state__hint">
+                  <Link to="/servico/novo" style={{ color: "var(--color-accent)", textDecoration: "none" }}>
                     Cadastrar o primeiro
                   </Link>
-                  .
                 </p>
-              ) : (
-                <div className="table-responsive">
-                  <table className="data-table">
-                    <thead>
-                      <tr>
-                        <th>Serviço</th>
-                        <th className="col-num">Preço</th>
-                        <th className="col-num">Duração</th>
+              </div>
+            ) : (
+              <div className="table-responsive" style={{ boxShadow: "none", border: "1px solid var(--color-border-light)", borderRadius: 8 }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Serviço</th>
+                      <th className="col-num">Preço</th>
+                      <th className="col-num">Duração</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {servicos.slice(0, 5).map((s) => (
+                      <tr key={s.id}>
+                        <td>{s.descricao}</td>
+                        <td className="col-num">
+                          <span className="amount">
+                            {formatCurrency(s.preco)}
+                          </span>
+                        </td>
+                        <td className="col-num">
+                          {formatDuration(s.duracaoHoras)}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {servicos.map((s) => (
-                        <tr key={s.id}>
-                          <td>{s.descricao}</td>
-                          <td className="col-num">
-                            <span className="amount">
-                              {formatCurrency(s.preco)}
-                            </span>
-                          </td>
-                          <td className="col-num">
-                            {formatDuration(s.duracaoHoras)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </section>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </section>
 
-          {/* Fluxo de atendimento */}
-          <section className="panel">
-            <div className="panel__head">
-              <h2>Fluxo de atendimento</h2>
+        {/* Resumo do dia */}
+        <aside className="home__panel home__panel--side">
+          <h2 className="section-label" style={{ marginBottom: 16 }}>Resumo operacional</h2>
+          <dl className="kv">
+            <div className="kv__row">
+              <dt>Serviços disponíveis</dt>
+              <dd>{loading ? "—" : totalServicos}</dd>
             </div>
-            <div className="panel__body">
-              <ol className="flow">
-                {fluxo.map((step, i) => (
-                  <li className="flow__step" key={i}>
-                    <span className="flow__num">{i + 1}</span>
-                    <div className="flow__text">
-                      <span className="flow__title">
-                        <i className={`bi ${step.icon}`}></i> {step.title}
-                      </span>
-                      <span className="flow__desc">{step.desc}</span>
-                    </div>
-                  </li>
-                ))}
-              </ol>
+            <div className="kv__row">
+              <dt>Atendimentos hoje</dt>
+              <dd>{loading ? "—" : totalAtendimentos}</dd>
             </div>
-          </section>
-        </div>
+            <div className="kv__row kv__row--total">
+              <dt>Total faturado</dt>
+              <dd>{loading ? "—" : formatCurrency(faturamento)}</dd>
+            </div>
+          </dl>
+          
+          <div style={{ marginTop: "auto", paddingTop: 24 }}>
+            <Link to="/atendimento/novo" className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
+              Registrar novo atendimento
+            </Link>
+          </div>
+        </aside>
+      </div>
 
-        {/* ── Coluna lateral ── */}
-        <aside className="home__aside">
-          {/* Informações operacionais (dados reais) */}
-          <section className="panel">
-            <div className="panel__head">
-              <h2>Informações operacionais</h2>
-            </div>
-            <div className="panel__body">
-              <dl className="kv">
-                <div className="kv__row">
-                  <dt>Serviços cadastrados</dt>
-                  <dd>{loading ? "—" : totalServicos}</dd>
+      <div className="home__row">
+        {/* Fluxo de Atendimento (Timeline Stepper) */}
+        <section className="home__panel home__panel--main">
+          <h2 className="section-label" style={{ marginBottom: 24 }}>Fluxo de atendimento</h2>
+          <div className="timeline">
+            {fluxo.map((step, i) => (
+              <div className={`timeline-item ${step.active ? "active" : ""}`} key={i}>
+                <div className="timeline-marker">
+                  <div className="timeline-dot">{i + 1}</div>
+                  {i < fluxo.length - 1 && <div className="timeline-line"></div>}
                 </div>
-                <div className="kv__row">
-                  <dt>Atendimentos registrados</dt>
-                  <dd>{loading ? "—" : totalAtendimentos}</dd>
+                <div className="timeline-content">
+                  <span className="timeline-title">{step.title}</span>
+                  <span className="timeline-desc">{step.desc}</span>
                 </div>
-                <div className="kv__row">
-                  <dt>Total dos atendimentos</dt>
-                  <dd>{loading ? "—" : formatCurrency(faturamento)}</dd>
-                </div>
-              </dl>
-            </div>
-          </section>
+              </div>
+            ))}
+          </div>
+        </section>
 
-          {/* Acesso rápido */}
-          <section className="panel">
-            <div className="panel__head">
-              <h2>Acesso rápido</h2>
-            </div>
-            <nav className="quick">
-              <Link to="/servicos" className="quick__item">
-                <i className="bi bi-list-check"></i>
-                <span>Serviços</span>
-                <i className="bi bi-chevron-right quick__arrow"></i>
-              </Link>
-              <Link to="/servico/novo" className="quick__item">
-                <i className="bi bi-plus-lg"></i>
-                <span>Novo serviço</span>
-                <i className="bi bi-chevron-right quick__arrow"></i>
-              </Link>
-              <Link to="/atendimentos" className="quick__item">
-                <i className="bi bi-journal-text"></i>
-                <span>Atendimentos</span>
-                <i className="bi bi-chevron-right quick__arrow"></i>
-              </Link>
-              <Link to="/atendimento/novo" className="quick__item">
-                <i className="bi bi-journal-plus"></i>
-                <span>Novo atendimento</span>
-                <i className="bi bi-chevron-right quick__arrow"></i>
-              </Link>
-            </nav>
-          </section>
+        {/* Acesso rápido */}
+        <aside className="home__panel home__panel--side">
+          <h2 className="section-label" style={{ marginBottom: 16 }}>Acesso rápido</h2>
+          <nav className="quick">
+            <Link to="/servicos" className="quick__item">
+              <i className="bi bi-card-list" style={{ marginRight: 8 }}></i>
+              Lista de Serviços
+            </Link>
+            <Link to="/servico/novo" className="quick__item">
+              <i className="bi bi-plus-circle" style={{ marginRight: 8 }}></i>
+              Cadastrar Serviço
+            </Link>
+            <Link to="/atendimentos" className="quick__item">
+              <i className="bi bi-clock-history" style={{ marginRight: 8 }}></i>
+              Histórico de Atendimentos
+            </Link>
+          </nav>
         </aside>
       </div>
 
       <style>{`
-        .home__intro {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: 6px;
-          padding: 16px 20px;
-          margin-bottom: 18px;
-        }
-        .home__lead {
-          font-size: 14px;
-          color: var(--text-2);
-          max-width: 760px;
-          margin-top: 6px;
-        }
-        .home__lead strong { color: var(--text); font-weight: 600; }
-        .home__grid {
+        /* ── Linhas do Grid ── */
+        .home__row {
           display: grid;
-          grid-template-columns: minmax(0, 1fr) 320px;
-          gap: 18px;
+          grid-template-columns: minmax(0, 1fr) 340px;
+          gap: var(--space-xl);
+          margin-bottom: var(--space-xl);
           align-items: stretch;
         }
-        .home__main, .home__aside {
+
+        /* ── Painéis com alturas alinhadas ── */
+        .home__panel {
           display: flex;
           flex-direction: column;
+          background: var(--color-surface);
+          border: 1px solid var(--color-border);
+          border-radius: 12px;
+          padding: var(--space-xl);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
         }
-        /* última seção de cada coluna cresce para alinhar as bases dos cards */
-        .home__main > .panel:last-child,
-        .home__aside > .panel:last-child {
-          flex: 1;
-        }
-        .home__muted { color: var(--text-2); font-size: 13px; }
-
-        /* Fluxo */
-        .flow {
-          list-style: none;
-          display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          gap: 0;
-        }
-        .flow__step {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          padding: 0 16px;
-          border-left: 1px solid var(--border);
-        }
-        .flow__step:first-child { border-left: none; padding-left: 0; }
-        .flow__num {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 24px;
-          height: 24px;
-          border-radius: 4px;
-          background: var(--accent-soft);
-          color: var(--accent-2);
-          font-size: 12px;
-          font-weight: 700;
-        }
-        .flow__title {
-          display: block;
-          font-size: 13px;
-          font-weight: 600;
-          color: var(--text);
-        }
-        .flow__title .bi { color: var(--accent-2); margin-right: 2px; }
-        .flow__desc {
-          display: block;
-          font-size: 12px;
-          color: var(--text-2);
-          margin-top: 2px;
-        }
-
-        /* Lista chave/valor */
-        .kv { display: flex; flex-direction: column; }
-        .kv__row {
+        
+        .home__panel-head {
           display: flex;
           justify-content: space-between;
           align-items: baseline;
-          gap: 10px;
-          padding: 9px 0;
-          border-bottom: 1px solid var(--border);
+          margin-bottom: var(--space-lg);
+        }
+        .home__manage-link {
+          font-size: 13px;
+          font-weight: 500;
+          color: var(--color-accent);
+          text-decoration: none;
+          transition: color 0.2s ease;
+        }
+        .home__manage-link:hover {
+          color: var(--color-accent-hover);
+          text-decoration: underline;
+        }
+
+        /* ── Coluna Lateral (KV) ── */
+        .kv { display: flex; flex-direction: column; flex-grow: 1; }
+        .kv__row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px 0;
+          border-bottom: 1px dashed var(--color-border);
+          font-size: 14px;
         }
         .kv__row:last-child { border-bottom: none; }
-        .kv dt { font-size: 13px; color: var(--text-2); }
+        .kv dt { color: var(--color-text-secondary); font-weight: 500; }
         .kv dd {
-          font-size: 15px;
-          font-weight: 700;
-          color: var(--text);
+          font-weight: 600;
+          color: var(--color-text-primary);
           font-variant-numeric: tabular-nums;
+        }
+        .kv__row--total {
+          margin-top: auto;
+          background: var(--color-table-row-hover);
+          padding: 16px;
+          border-radius: 8px;
+          border-bottom: none;
+        }
+        .kv__row--total dt { color: var(--color-text-primary); }
+        .kv__row--total dd {
+          font-weight: 700;
+          font-size: 16px;
+          color: var(--color-accent);
         }
 
         /* Acesso rápido */
-        .quick { display: flex; flex-direction: column; }
+        .quick { display: flex; flex-direction: column; gap: 8px; }
         .quick__item {
           display: flex;
           align-items: center;
-          gap: 10px;
-          padding: 11px 16px;
-          border-bottom: 1px solid var(--border);
-          color: var(--text);
+          padding: 12px 16px;
+          border-radius: 8px;
+          color: var(--color-text-secondary);
+          background: var(--color-bg);
+          border: 1px solid var(--color-border-light);
           text-decoration: none;
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 500;
+          transition: all 0.2s ease;
         }
-        .quick__item:last-child { border-bottom: none; }
-        .quick__item:hover { background: var(--surface-2); }
-        .quick__item > .bi:first-child { color: var(--accent-2); font-size: 15px; }
-        .quick__arrow { margin-left: auto; color: var(--text-3); font-size: 12px; }
+        .quick__item:hover { 
+          color: var(--color-accent);
+          border-color: var(--color-accent-dim);
+          background: var(--color-surface);
+          box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+          transform: translateY(-1px);
+        }
 
-        @media (max-width: 920px) {
-          .home__grid { grid-template-columns: 1fr; }
-          .flow { grid-template-columns: 1fr 1fr; gap: 16px; }
-          .flow__step { border-left: none; padding: 0; }
+        /* ── Timeline Stepper ── */
+        .timeline {
+          display: flex;
+          justify-content: space-between;
+          position: relative;
+          margin-top: auto;
+          margin-bottom: auto;
+          padding: 16px 0;
         }
-        @media (max-width: 520px) {
-          .flow { grid-template-columns: 1fr; }
+        .timeline-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          flex: 1;
+          position: relative;
+        }
+        .timeline-marker {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          margin-bottom: 16px;
+        }
+        .timeline-dot {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: var(--color-surface);
+          border: 2px solid var(--color-border);
+          color: var(--color-text-muted);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+          font-weight: 600;
+          position: relative;
+          z-index: 2;
+          transition: all 0.3s ease;
+        }
+        .timeline-line {
+          position: absolute;
+          top: 50%;
+          left: calc(50% + 14px);
+          right: calc(-50% + 14px);
+          height: 2px;
+          background: var(--color-border);
+          z-index: 1;
+        }
+        .timeline-content {
+          padding: 0 12px;
+        }
+        .timeline-title {
+          display: block;
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--color-text-primary);
+          margin-bottom: 4px;
+        }
+        .timeline-desc {
+          display: block;
+          font-size: 13px;
+          color: var(--color-text-secondary);
+          line-height: 1.4;
+        }
+        
+        @media (max-width: 920px) {
+          .home__row { grid-template-columns: 1fr; gap: var(--space-lg); }
+          .timeline { flex-direction: column; align-items: flex-start; gap: 24px; }
+          .timeline-item { flex-direction: row; text-align: left; align-items: flex-start; }
+          .timeline-marker { width: auto; margin-bottom: 0; margin-right: 16px; flex-direction: column; }
+          .timeline-line { left: 50%; top: calc(50% + 14px); bottom: calc(-100% - 14px); width: 2px; height: auto; right: auto; }
         }
       `}</style>
     </div>

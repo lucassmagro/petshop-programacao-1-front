@@ -68,7 +68,7 @@ function ServicoList() {
   }, [servicos, busca]);
 
   return (
-    <div className="page-card">
+    <div className="page">
       <div className="page-header">
         <div>
           <h1 className="page-title">Serviços</h1>
@@ -76,8 +76,8 @@ function ServicoList() {
             Cadastro dos serviços oferecidos pelo pet shop.
           </p>
         </div>
-        <Link to="/servico/novo" className="ui-btn ui-btn--primary">
-          <i className="bi bi-plus-lg"></i> Novo serviço
+        <Link to="/servico/novo" className="btn-primary">
+          Novo serviço
         </Link>
       </div>
 
@@ -107,7 +107,6 @@ function ServicoList() {
         </div>
       ) : servicos.length === 0 ? (
         <div className="empty-state">
-          <i className="bi bi-inbox"></i>
           <p className="empty-state__title">Nenhum serviço cadastrado.</p>
           <p className="empty-state__hint">
             Clique em "Novo serviço" para adicionar o primeiro registro.
@@ -115,7 +114,6 @@ function ServicoList() {
         </div>
       ) : filtrados.length === 0 ? (
         <div className="empty-state">
-          <i className="bi bi-search"></i>
           <p className="empty-state__title">Nenhum resultado para "{busca}".</p>
         </div>
       ) : (
@@ -123,11 +121,11 @@ function ServicoList() {
           <table className="data-table">
             <thead>
               <tr>
-                <th style={{ width: 70 }}>Código</th>
+                <th style={{ width: 60 }}>Cód.</th>
                 <th>Descrição</th>
                 <th className="col-num">Preço</th>
                 <th className="col-num">Duração</th>
-                <th className="col-actions">Ações</th>
+                <th className="col-actions" style={{ width: 120 }}>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -142,20 +140,19 @@ function ServicoList() {
                   </td>
                   <td className="col-num">{formatDuration(s.duracaoHoras)}</td>
                   <td className="col-actions">
-                    <div className="row-actions">
-                      <Link
-                        to={`/servico/editar/${s.id}`}
-                        className="ui-btn ui-btn--secondary ui-btn--sm"
-                      >
-                        <i className="bi bi-pencil"></i> Editar
-                      </Link>
-                      <button
-                        onClick={() => handleDeletar(s.id)}
-                        className="ui-btn ui-btn--danger ui-btn--sm"
-                      >
-                        <i className="bi bi-trash3"></i> Excluir
-                      </button>
-                    </div>
+                    <Link
+                      to={`/servico/editar/${s.id}`}
+                      className="btn-link"
+                    >
+                      Editar
+                    </Link>
+                    <span className="action-separator">·</span>
+                    <button
+                      onClick={() => handleDeletar(s.id)}
+                      className="btn-link btn-link-danger"
+                    >
+                      Excluir
+                    </button>
                   </td>
                 </tr>
               ))}

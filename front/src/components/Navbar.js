@@ -43,21 +43,23 @@ function Navbar() {
 
   return (
     <nav className="appnav">
-      <Link to="/" className="nav-brand">
-        PetShop Gestão
-      </Link>
+      <div className="appnav__content">
+        <Link to="/" className="nav-brand">
+          PetShop
+        </Link>
 
-      <div className="nav-links">{renderLinks()}</div>
+        <div className="nav-links">{renderLinks()}</div>
 
-      <span className="nav-date">{formatToday()}</span>
+        <span className="nav-date">{formatToday()}</span>
 
-      <button
-        className="nav-toggle"
-        onClick={() => setMenuOpen(!menuOpen)}
-        aria-label="Menu"
-      >
-        <i className={`bi ${menuOpen ? "bi-x-lg" : "bi-list"}`}></i>
-      </button>
+        <button
+          className="nav-toggle"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Menu"
+        >
+          ☰
+        </button>
+      </div>
 
       {menuOpen && <div className="nav-links-mobile">{renderLinks()}</div>}
 
@@ -66,38 +68,47 @@ function Navbar() {
           position: sticky;
           top: 0;
           z-index: 1000;
-          background: var(--color-nav-bg);
-          height: 44px;
+          background: rgba(255, 255, 255, 0.85);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-bottom: 1px solid var(--color-border);
+          box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        .appnav__content {
+          height: 60px;
           display: flex;
           align-items: center;
           gap: 32px;
           padding: 0 32px;
+          max-width: 1280px;
+          margin: 0 auto;
         }
         .nav-brand {
-          font-size: 14px;
-          font-weight: 600;
-          color: #ffffff;
-          letter-spacing: 0.01em;
+          font-size: 16px;
+          font-weight: 700;
+          color: var(--color-accent);
+          letter-spacing: -0.02em;
           text-decoration: none;
         }
         .nav-links {
           display: flex;
           align-items: center;
-          gap: 24px;
+          gap: 28px;
         }
         .nav-link {
-          font-size: 13px;
-          font-weight: 400;
-          color: var(--color-nav-text);
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--color-text-secondary);
           text-decoration: none;
+          transition: color 0.2s ease;
         }
-        .nav-link:hover { color: var(--color-nav-active); }
-        .nav-link.active { color: var(--color-nav-active); font-weight: 500; }
+        .nav-link:hover { color: var(--color-text-primary); }
+        .nav-link.active { color: var(--color-accent); font-weight: 600; }
         .nav-date {
           margin-left: auto;
-          font-size: 12px;
-          color: var(--color-nav-text);
-          opacity: 0.7;
+          font-size: 13px;
+          font-weight: 500;
+          color: var(--color-text-muted);
           white-space: nowrap;
         }
         .nav-toggle {
@@ -105,30 +116,33 @@ function Navbar() {
           margin-left: auto;
           background: transparent;
           border: none;
-          color: #ffffff;
+          color: var(--color-text-primary);
           font-size: 20px;
           cursor: pointer;
-          padding: 2px 4px;
+          padding: 4px;
         }
         .nav-links-mobile {
           display: none;
           position: absolute;
-          top: 44px;
+          top: 60px;
           left: 0;
           right: 0;
           flex-direction: column;
           gap: 0;
-          background: var(--color-nav-bg);
-          border-top: 1px solid rgba(255, 255, 255, 0.08);
-          padding: 4px 32px 10px;
+          background: rgba(255, 255, 255, 0.98);
+          backdrop-filter: blur(12px);
+          border-bottom: 1px solid var(--color-border);
+          padding: 8px 32px 16px;
+          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
           animation: fadeIn 0.15s ease;
         }
-        .nav-links-mobile .nav-link { padding: 9px 0; }
+        .nav-links-mobile .nav-link { padding: 12px 0; border-bottom: 1px solid var(--color-border-light); }
+        .nav-links-mobile .nav-link:last-child { border-bottom: none; }
         @media (max-width: 640px) {
-          .appnav { gap: 16px; padding: 0 16px; }
+          .appnav__content { gap: 16px; padding: 0 20px; height: 56px; }
           .nav-links, .nav-date { display: none; }
           .nav-toggle { display: block; }
-          .nav-links-mobile { display: flex; padding: 4px 16px 10px; }
+          .nav-links-mobile { display: flex; padding: 4px 20px 12px; }
         }
       `}</style>
     </nav>
