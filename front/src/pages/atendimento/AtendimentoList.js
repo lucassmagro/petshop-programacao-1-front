@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
@@ -6,79 +6,6 @@ import {
   deletarAtendimento,
 } from "../../services/atendimentoService";
 import ConfirmModal from "../../components/ConfirmModal";
-
-/* ── style tokens ── */
-const tableStyle = {
-  width: "100%",
-  borderCollapse: "separate",
-  borderSpacing: 0,
-  animation: "fadeIn 0.3s ease",
-  minWidth: 800,
-};
-const thStyle = {
-  padding: "12px 16px",
-  fontFamily: "'Inter', sans-serif",
-  fontSize: 11,
-  fontWeight: 600,
-  textTransform: "uppercase",
-  letterSpacing: "0.6px",
-  color: "#52796f",
-  background: "#f7faf8",
-  borderBottom: "2px solid #e0e8e4",
-  whiteSpace: "nowrap",
-};
-const tdStyle = {
-  padding: "14px 16px",
-  fontFamily: "'Inter', sans-serif",
-  fontSize: 14,
-  color: "#0d1b2a",
-  verticalAlign: "middle",
-  borderBottom: "1px solid #f0f4f0",
-  whiteSpace: "nowrap",
-};
-const idPill = {
-  background: "#f0f4f0",
-  color: "#52796f",
-  padding: "2px 8px",
-  borderRadius: 20,
-  fontSize: 12,
-  fontWeight: 600,
-  fontFamily: "monospace",
-};
-const priceStyle = { fontWeight: 600, color: "#1b4332" };
-const durationBadge = {
-  background: "#d8f3dc",
-  color: "#1b4332",
-  padding: "3px 10px",
-  borderRadius: 20,
-  fontSize: 12,
-  fontWeight: 500,
-};
-const btnPrimary = {
-  background: "linear-gradient(135deg, #2d6a4f, #1b4332)",
-  color: "#fff",
-  border: "none",
-  borderRadius: 8,
-  padding: "10px 20px",
-  fontFamily: "'Inter', sans-serif",
-  fontWeight: 600,
-  fontSize: 14,
-  boxShadow: "0 2px 8px rgba(29,99,66,0.25)",
-  textDecoration: "none",
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 8,
-  transition: "all 0.2s ease",
-};
-
-const shimmerRow = {
-  height: 48,
-  background: "linear-gradient(90deg, #f0f4f0 25%, #e0e8e4 50%, #f0f4f0 75%)",
-  backgroundSize: "200% 100%",
-  animation: "shimmer 1.5s infinite",
-  borderRadius: 6,
-  marginBottom: 8,
-};
 
 function formatDuration(h) {
   const hours = Math.floor(h);
@@ -98,6 +25,7 @@ function formatCurrency(v) {
 function AtendimentoList() {
   const [atendimentos, setAtendimentos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [busca, setBusca] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
@@ -134,138 +62,117 @@ function AtendimentoList() {
     }
   };
 
+  const filtrados = useMemo(() => {
+    const termo = busca.trim().toLowerCase();
+    if (!termo) return atendimentos;
+    return atendimentos.filter(
+      (a) =>
+        String(a.nomePet).toLowerCase().includes(termo) ||
+        String(a.nomeDono).toLowerCase().includes(termo),
+    );
+  }, [atendimentos, busca]);
+
+  const totalPeriodo = useMemo(
+    () => filtrados.reduce((acc, a) => acc + Number(a.valorTotal || 0), 0),
+    [filtrados],
+  );
+
   return (
     <div className="page-card">
       <div className="page-header">
         <div>
           <h1 className="page-title">Atendimentos</h1>
-          <p className="page-subtitle">Gerencie os atendimentos realizados.</p>
+          <p className="page-subtitle">
+            Registro dos atendimentos realizados no pet shop.
+          </p>
         </div>
-        <Link to="/atendimento/novo" style={btnPrimary}>
-          <i className="bi bi-plus-lg"></i> Novo Atendimento
+        <Link to="/atendimento/novo" className="ui-btn ui-btn--primary">
+          <i className="bi bi-plus-lg"></i> Novo atendimento
         </Link>
       </div>
 
+      {!loading && atendimentos.length > 0 && (
+        <div className="filter-bar">
+          <div className="search-box">
+            <i className="bi bi-search"></i>
+            <input
+              type="text"
+              placeholder="Buscar por pet ou dono..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+            />
+          </div>
+          <span className="result-count">
+            {filtrados.length} de {atendimentos.length}{" "}
+            {atendimentos.length === 1 ? "registro" : "registros"} · total{" "}
+            <strong>{formatCurrency(totalPeriodo)}</strong>
+          </span>
+        </div>
+      )}
+
       {loading ? (
         <div>
-          <div style={shimmerRow}></div>
-          <div style={shimmerRow}></div>
-          <div style={shimmerRow}></div>
+          <div className="skeleton-row"></div>
+          <div className="skeleton-row"></div>
+          <div className="skeleton-row"></div>
         </div>
       ) : atendimentos.length === 0 ? (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "60px 20px",
-            color: "#52796f",
-          }}
-        >
-          <i
-            className="bi bi-inbox"
-            style={{
-              fontSize: 48,
-              color: "#b7d5c4",
-              display: "block",
-              marginBottom: 16,
-            }}
-          ></i>
-          <p
-            style={{
-              fontFamily: "'Sora', sans-serif",
-              fontWeight: 600,
-              fontSize: 16,
-              color: "#2d6a4f",
-              margin: 0,
-            }}
-          >
-            Nenhum atendimento cadastrado.
+        <div className="empty-state">
+          <i className="bi bi-inbox"></i>
+          <p className="empty-state__title">Nenhum atendimento cadastrado.</p>
+          <p className="empty-state__hint">
+            Clique em "Novo atendimento" para adicionar o primeiro registro.
           </p>
-          <p
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: 14,
-              color: "#74c69d",
-              marginTop: 6,
-            }}
-          >
-            Clique em "Novo Atendimento" para adicionar o primeiro registro.
-          </p>
+        </div>
+      ) : filtrados.length === 0 ? (
+        <div className="empty-state">
+          <i className="bi bi-search"></i>
+          <p className="empty-state__title">Nenhum resultado para "{busca}".</p>
         </div>
       ) : (
         <div className="table-responsive">
-          <table style={tableStyle}>
+          <table className="data-table">
             <thead>
               <tr>
-                <th style={thStyle}>ID</th>
-                <th style={thStyle}>Pet</th>
-                <th style={thStyle}>Dono</th>
-                <th style={thStyle}>Serviço</th>
-                <th style={thStyle}>Valor Total</th>
-                <th style={thStyle}>Tempo Est.</th>
-                <th style={{ ...thStyle, textAlign: "right" }}>Ações</th>
+                <th style={{ width: 70 }}>Código</th>
+                <th>Pet</th>
+                <th>Dono</th>
+                <th>Serviço</th>
+                <th className="col-num">Valor total</th>
+                <th className="col-num">Tempo est.</th>
+                <th className="col-actions">Ações</th>
               </tr>
             </thead>
             <tbody>
-              {atendimentos.map((a) => (
-                <tr
-                  key={a.id}
-                  style={{ transition: "background 0.15s ease" }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.background = "#f7faf8")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = "transparent")
-                  }
-                >
-                  <td style={tdStyle}>
-                    <span style={idPill}>#{a.id}</span>
+              {filtrados.map((a) => (
+                <tr key={a.id}>
+                  <td>
+                    <span className="id-ref">#{a.id}</span>
                   </td>
-                  <td style={tdStyle}>{a.nomePet}</td>
-                  <td style={tdStyle}>{a.nomeDono}</td>
-                  <td style={tdStyle}>
-                    <span style={idPill}>#{a.idservico}</span>
+                  <td>{a.nomePet}</td>
+                  <td>{a.nomeDono}</td>
+                  <td>
+                    <span className="id-ref">#{a.idservico}</span>
                   </td>
-                  <td style={tdStyle}>
-                    <span style={priceStyle}>
+                  <td className="col-num">
+                    <span className="amount">
                       {formatCurrency(a.valorTotal)}
                     </span>
                   </td>
-                  <td style={tdStyle}>
-                    <span style={durationBadge}>
-                      {formatDuration(a.tempoEstimado)}
-                    </span>
-                  </td>
-                  <td style={{ ...tdStyle, textAlign: "right" }}>
+                  <td className="col-num">{formatDuration(a.tempoEstimado)}</td>
+                  <td className="col-actions">
                     <div className="row-actions">
                       <Link
                         to={`/atendimento/editar/${a.id}`}
-                        className="action-button action-button--edit"
+                        className="ui-btn ui-btn--secondary ui-btn--sm"
                       >
-                        <span
-                          className="action-button__icon"
-                          aria-hidden="true"
-                        >
-                          <i
-                            className="bi bi-pencil-fill"
-                            style={{ fontSize: 12 }}
-                          ></i>
-                        </span>
-                        <span>Editar</span>
+                        <i className="bi bi-pencil"></i> Editar
                       </Link>
                       <button
                         onClick={() => handleDeletar(a.id)}
-                        className="action-button action-button--delete"
+                        className="ui-btn ui-btn--danger ui-btn--sm"
                       >
-                        <span
-                          className="action-button__icon"
-                          aria-hidden="true"
-                        >
-                          <i
-                            className="bi bi-trash3-fill"
-                            style={{ fontSize: 12 }}
-                          ></i>
-                        </span>
-                        <span>Excluir</span>
+                        <i className="bi bi-trash3"></i> Excluir
                       </button>
                     </div>
                   </td>

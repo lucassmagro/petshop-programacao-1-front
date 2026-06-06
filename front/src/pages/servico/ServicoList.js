@@ -1,81 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { listarServicos, deletarServico } from "../../services/servicoService";
 import ConfirmModal from "../../components/ConfirmModal";
-
-/* ── style tokens ── */
-const tableStyle = {
-  width: "100%",
-  borderCollapse: "separate",
-  borderSpacing: 0,
-  animation: "fadeIn 0.3s ease",
-  minWidth: 600,
-};
-const thStyle = {
-  padding: "12px 16px",
-  fontFamily: "'Inter', sans-serif",
-  fontSize: 11,
-  fontWeight: 600,
-  textTransform: "uppercase",
-  letterSpacing: "0.6px",
-  color: "#52796f",
-  background: "#f7faf8",
-  borderBottom: "2px solid #e0e8e4",
-  whiteSpace: "nowrap",
-};
-const tdStyle = {
-  padding: "14px 16px",
-  fontFamily: "'Inter', sans-serif",
-  fontSize: 14,
-  color: "#0d1b2a",
-  verticalAlign: "middle",
-  borderBottom: "1px solid #f0f4f0",
-  whiteSpace: "nowrap",
-};
-const idPill = {
-  background: "#f0f4f0",
-  color: "#52796f",
-  padding: "2px 8px",
-  borderRadius: 20,
-  fontSize: 12,
-  fontWeight: 600,
-  fontFamily: "monospace",
-};
-const priceStyle = { fontWeight: 600, color: "#1b4332" };
-const durationBadge = {
-  background: "#d8f3dc",
-  color: "#1b4332",
-  padding: "3px 10px",
-  borderRadius: 20,
-  fontSize: 12,
-  fontWeight: 500,
-};
-const btnPrimary = {
-  background: "linear-gradient(135deg, #2d6a4f, #1b4332)",
-  color: "#fff",
-  border: "none",
-  borderRadius: 8,
-  padding: "10px 20px",
-  fontFamily: "'Inter', sans-serif",
-  fontWeight: 600,
-  fontSize: 14,
-  boxShadow: "0 2px 8px rgba(29,99,66,0.25)",
-  textDecoration: "none",
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 8,
-  transition: "all 0.2s ease",
-};
-
-const shimmerRow = {
-  height: 48,
-  background: "linear-gradient(90deg, #f0f4f0 25%, #e0e8e4 50%, #f0f4f0 75%)",
-  backgroundSize: "200% 100%",
-  animation: "shimmer 1.5s infinite",
-  borderRadius: 6,
-  marginBottom: 8,
-};
 
 function formatDuration(h) {
   const hours = Math.floor(h);
@@ -95,6 +22,7 @@ function formatCurrency(v) {
 function ServicoList() {
   const [servicos, setServicos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [busca, setBusca] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
@@ -131,136 +59,101 @@ function ServicoList() {
     }
   };
 
+  const filtrados = useMemo(() => {
+    const termo = busca.trim().toLowerCase();
+    if (!termo) return servicos;
+    return servicos.filter((s) =>
+      String(s.descricao).toLowerCase().includes(termo),
+    );
+  }, [servicos, busca]);
+
   return (
     <div className="page-card">
       <div className="page-header">
         <div>
           <h1 className="page-title">Serviços</h1>
           <p className="page-subtitle">
-            Gerencie os serviços oferecidos pelo pet shop.
+            Cadastro dos serviços oferecidos pelo pet shop.
           </p>
         </div>
-        <Link to="/servico/novo" style={btnPrimary}>
-          <i className="bi bi-plus-lg"></i> Novo Serviço
+        <Link to="/servico/novo" className="ui-btn ui-btn--primary">
+          <i className="bi bi-plus-lg"></i> Novo serviço
         </Link>
       </div>
 
+      {!loading && servicos.length > 0 && (
+        <div className="filter-bar">
+          <div className="search-box">
+            <i className="bi bi-search"></i>
+            <input
+              type="text"
+              placeholder="Buscar por descrição..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+            />
+          </div>
+          <span className="result-count">
+            {filtrados.length} de {servicos.length}{" "}
+            {servicos.length === 1 ? "registro" : "registros"}
+          </span>
+        </div>
+      )}
+
       {loading ? (
         <div>
-          <div style={shimmerRow}></div>
-          <div style={shimmerRow}></div>
-          <div style={shimmerRow}></div>
+          <div className="skeleton-row"></div>
+          <div className="skeleton-row"></div>
+          <div className="skeleton-row"></div>
         </div>
       ) : servicos.length === 0 ? (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "60px 20px",
-            color: "#52796f",
-          }}
-        >
-          <i
-            className="bi bi-inbox"
-            style={{
-              fontSize: 48,
-              color: "#b7d5c4",
-              display: "block",
-              marginBottom: 16,
-            }}
-          ></i>
-          <p
-            style={{
-              fontFamily: "'Sora', sans-serif",
-              fontWeight: 600,
-              fontSize: 16,
-              color: "#2d6a4f",
-              margin: 0,
-            }}
-          >
-            Nenhum serviço cadastrado.
+        <div className="empty-state">
+          <i className="bi bi-inbox"></i>
+          <p className="empty-state__title">Nenhum serviço cadastrado.</p>
+          <p className="empty-state__hint">
+            Clique em "Novo serviço" para adicionar o primeiro registro.
           </p>
-          <p
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: 14,
-              color: "#74c69d",
-              marginTop: 6,
-            }}
-          >
-            Clique em "Novo Serviço" para adicionar o primeiro registro.
-          </p>
+        </div>
+      ) : filtrados.length === 0 ? (
+        <div className="empty-state">
+          <i className="bi bi-search"></i>
+          <p className="empty-state__title">Nenhum resultado para "{busca}".</p>
         </div>
       ) : (
         <div className="table-responsive">
-          <table style={tableStyle}>
+          <table className="data-table">
             <thead>
               <tr>
-                <th style={thStyle}>ID</th>
-                <th style={thStyle}>Descrição</th>
-                <th style={thStyle}>Preço</th>
-                <th style={thStyle}>Duração</th>
-                <th style={{ ...thStyle, textAlign: "right" }}>Ações</th>
+                <th style={{ width: 70 }}>Código</th>
+                <th>Descrição</th>
+                <th className="col-num">Preço</th>
+                <th className="col-num">Duração</th>
+                <th className="col-actions">Ações</th>
               </tr>
             </thead>
             <tbody>
-              {servicos.map((s) => (
-                <tr
-                  key={s.id}
-                  style={{ transition: "background 0.15s ease" }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.background = "#f7faf8")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = "transparent")
-                  }
-                >
-                  <td style={tdStyle}>
-                    <span style={idPill}>#{s.id}</span>
+              {filtrados.map((s) => (
+                <tr key={s.id}>
+                  <td>
+                    <span className="id-ref">#{s.id}</span>
                   </td>
-                  <td
-                    style={{ ...tdStyle, whiteSpace: "normal", minWidth: 140 }}
-                  >
-                    {s.descricao}
+                  <td style={{ whiteSpace: "normal" }}>{s.descricao}</td>
+                  <td className="col-num">
+                    <span className="amount">{formatCurrency(s.preco)}</span>
                   </td>
-                  <td style={tdStyle}>
-                    <span style={priceStyle}>{formatCurrency(s.preco)}</span>
-                  </td>
-                  <td style={tdStyle}>
-                    <span style={durationBadge}>
-                      {formatDuration(s.duracaoHoras)}
-                    </span>
-                  </td>
-                  <td style={{ ...tdStyle, textAlign: "right" }}>
+                  <td className="col-num">{formatDuration(s.duracaoHoras)}</td>
+                  <td className="col-actions">
                     <div className="row-actions">
                       <Link
                         to={`/servico/editar/${s.id}`}
-                        className="action-button action-button--edit"
+                        className="ui-btn ui-btn--secondary ui-btn--sm"
                       >
-                        <span
-                          className="action-button__icon"
-                          aria-hidden="true"
-                        >
-                          <i
-                            className="bi bi-pencil-fill"
-                            style={{ fontSize: 12 }}
-                          ></i>
-                        </span>
-                        <span>Editar</span>
+                        <i className="bi bi-pencil"></i> Editar
                       </Link>
                       <button
                         onClick={() => handleDeletar(s.id)}
-                        className="action-button action-button--delete"
+                        className="ui-btn ui-btn--danger ui-btn--sm"
                       >
-                        <span
-                          className="action-button__icon"
-                          aria-hidden="true"
-                        >
-                          <i
-                            className="bi bi-trash3-fill"
-                            style={{ fontSize: 12 }}
-                          ></i>
-                        </span>
-                        <span>Excluir</span>
+                        <i className="bi bi-trash3"></i> Excluir
                       </button>
                     </div>
                   </td>

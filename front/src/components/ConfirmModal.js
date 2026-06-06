@@ -2,80 +2,55 @@ import React from "react";
 
 const backdropStyle = {
   position: "fixed",
-  top: 0,
-  left: 0,
-  width: "100vw",
-  height: "100vh",
-  background: "rgba(0,0,0,0.4)",
-  backdropFilter: "blur(2px)",
+  inset: 0,
+  background: "rgba(15, 23, 28, 0.45)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   zIndex: 2000,
-  animation: "fadeIn 0.2s ease",
+  animation: "fadeIn 0.12s ease",
+  padding: 16,
 };
 
 const modalBoxStyle = {
-  background: "#ffffff",
-  borderRadius: 12,
-  padding: 28,
-  maxWidth: 400,
-  width: "90%",
-  boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
+  background: "var(--surface)",
+  border: "1px solid var(--border-2)",
+  borderRadius: 6,
+  width: "100%",
+  maxWidth: 420,
+  boxShadow: "0 12px 32px rgba(15, 23, 28, 0.18)",
 };
 
-const iconStyle = {
-  fontSize: 32,
-  color: "#d62828",
-  marginBottom: 12,
+const headStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: 9,
+  padding: "13px 18px",
+  borderBottom: "1px solid var(--border)",
 };
 
 const titleStyle = {
-  fontFamily: "'Sora', sans-serif",
-  fontWeight: 600,
-  fontSize: 18,
-  color: "#0d1b2a",
-  margin: "0 0 8px 0",
+  fontSize: 15,
+  fontWeight: 700,
+  color: "var(--text)",
+  margin: 0,
 };
 
-const messageStyle = {
-  fontFamily: "'Inter', sans-serif",
+const bodyStyle = {
+  padding: "16px 18px",
   fontSize: 14,
-  color: "#52796f",
-  marginBottom: 24,
+  color: "var(--text-2)",
   lineHeight: 1.5,
 };
 
-const btnRowStyle = {
+const footStyle = {
   display: "flex",
   justifyContent: "flex-end",
-  gap: 10,
-};
-
-const cancelBtnStyle = {
-  padding: "9px 18px",
-  borderRadius: 8,
-  border: "1px solid #e0e8e4",
-  background: "#ffffff",
-  color: "#52796f",
-  fontFamily: "'Inter', sans-serif",
-  fontWeight: 600,
-  fontSize: 14,
-  cursor: "pointer",
-  transition: "background 0.15s",
-};
-
-const confirmBtnStyle = {
-  padding: "9px 18px",
-  borderRadius: 8,
-  border: "none",
-  background: "#d62828",
-  color: "#ffffff",
-  fontFamily: "'Inter', sans-serif",
-  fontWeight: 600,
-  fontSize: 14,
-  cursor: "pointer",
-  transition: "background 0.15s",
+  gap: 9,
+  padding: "12px 18px",
+  borderTop: "1px solid var(--border)",
+  background: "var(--surface-2)",
+  borderRadius: "0 0 6px 6px",
 };
 
 function ConfirmModal({ isOpen, title, message, onConfirm, onCancel }) {
@@ -84,15 +59,24 @@ function ConfirmModal({ isOpen, title, message, onConfirm, onCancel }) {
   return (
     <div style={backdropStyle} onClick={onCancel}>
       <div style={modalBoxStyle} onClick={(e) => e.stopPropagation()}>
-        <i className="bi bi-exclamation-triangle-fill" style={iconStyle}></i>
-        <div style={titleStyle}>{title}</div>
-        <div style={messageStyle}>{message}</div>
-        <div style={btnRowStyle}>
-          <button style={cancelBtnStyle} onClick={onCancel}>
+        <div style={headStyle}>
+          <i
+            className="bi bi-exclamation-triangle-fill"
+            style={{ color: "var(--danger)", fontSize: 17 }}
+          ></i>
+          <h3 style={titleStyle}>{title}</h3>
+        </div>
+        <div style={bodyStyle}>{message}</div>
+        <div style={footStyle}>
+          <button className="ui-btn ui-btn--secondary" onClick={onCancel}>
             Cancelar
           </button>
-          <button style={confirmBtnStyle} onClick={onConfirm}>
-            Excluir
+          <button
+            className="ui-btn ui-btn--danger"
+            onClick={onConfirm}
+            style={{ background: "var(--danger)", color: "#fff", borderColor: "var(--danger-2)" }}
+          >
+            <i className="bi bi-trash3"></i> Excluir
           </button>
         </div>
       </div>

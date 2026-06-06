@@ -1,35 +1,27 @@
 import React from "react";
 
-const footerStyle = {
-  background: "linear-gradient(135deg, #0d1b2a 0%, #1b4332 100%)",
-  padding: "24px 0",
-  textAlign: "center",
-};
-
-const textStyle = {
-  fontFamily: "'Inter', sans-serif",
-  fontSize: 14,
-  color: "rgba(255,255,255,0.55)",
-  margin: 0,
-};
-
-const heartStyle = {
-  color: "#52b788",
-  fontSize: 14,
-};
-
-const nameStyle = {
-  color: "#ffffff",
-  fontWeight: 600,
-};
-
 function Footer() {
   return (
-    <footer style={footerStyle}>
-      <p style={textStyle}>
-        Feito com <span style={heartStyle}>&lt;3</span> por{" "}
-        <span style={nameStyle}>Lucas Santos Magro</span>
-      </p>
+    <footer className="appfooter">
+      <span>PetShop Gestão · Sistema de controle de serviços e atendimentos</span>
+      <span>v1.0 · Lucas Santos Magro</span>
+
+      <style>{`
+        .appfooter {
+          border-top: 1px solid var(--color-border);
+          background: var(--color-surface);
+          padding: 10px 32px;
+          display: flex;
+          justify-content: space-between;
+          gap: 12px;
+          flex-wrap: wrap;
+          font-size: 11px;
+          color: var(--color-text-muted);
+        }
+        @media (max-width: 640px) {
+          .appfooter { padding: 10px 16px; }
+        }
+      `}</style>
     </footer>
   );
 }

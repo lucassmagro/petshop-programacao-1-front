@@ -7,7 +7,8 @@ const sidebarStyle = {
   left: 0,
   width: 240,
   height: "100vh",
-  background: "linear-gradient(180deg, #0d1b2a 0%, #1b4332 100%)",
+  background: "var(--brand)",
+  borderRight: "1px solid var(--brand-2)",
   display: "flex",
   flexDirection: "column",
   zIndex: 1000,
@@ -19,21 +20,19 @@ const brandStyle = {
 };
 
 const brandNameStyle = {
-  fontFamily: "'Sora', sans-serif",
   fontWeight: 700,
-  fontSize: 22,
+  fontSize: 18,
   color: "#ffffff",
   margin: 0,
   lineHeight: 1,
 };
 
 const brandSubStyle = {
-  fontFamily: "'Inter', sans-serif",
-  fontWeight: 400,
-  fontSize: 11,
-  color: "#74c69d",
+  fontWeight: 600,
+  fontSize: 10,
+  color: "#8fd3c2",
   textTransform: "uppercase",
-  letterSpacing: "1px",
+  letterSpacing: "0.12em",
   marginTop: 6,
 };
 
@@ -48,10 +47,9 @@ const linkBase = {
   gap: 12,
   padding: "12px 20px",
   margin: "2px 12px",
-  borderRadius: 8,
+  borderRadius: 4,
   textDecoration: "none",
   fontSize: 14,
-  fontFamily: "'Inter', sans-serif",
   fontWeight: 500,
   transition: "all 0.2s ease",
   borderLeft: "3px solid transparent",
@@ -67,7 +65,7 @@ const linkActive = {
   ...linkBase,
   color: "#ffffff",
   background: "rgba(255,255,255,0.12)",
-  borderLeftColor: "#52b788",
+  borderLeftColor: "var(--accent)",
 };
 
 const footerStyle = {
@@ -76,7 +74,6 @@ const footerStyle = {
 };
 
 const footerTextStyle = {
-  fontFamily: "'Inter', sans-serif",
   fontSize: 10,
   color: "rgba(255,255,255,0.3)",
   margin: 0,

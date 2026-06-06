@@ -1,174 +1,134 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-const navStyle = {
-  position: "sticky",
-  top: 0,
-  zIndex: 1000,
-  background: "linear-gradient(135deg, #0d1b2a 0%, #1b4332 100%)",
-  boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
-};
+const navItems = [
+  { to: "/", label: "Início", match: (p) => p === "/" },
+  { to: "/servicos", label: "Serviços", match: (p) => p.startsWith("/servico") },
+  {
+    to: "/atendimentos",
+    label: "Atendimentos",
+    match: (p) => p.startsWith("/atendimento"),
+  },
+];
 
-const containerStyle = {
-  maxWidth: 1100,
-  margin: "0 auto",
-  padding: "0 24px",
-  display: "flex",
-  alignItems: "center",
-  height: 64,
-  position: "relative",
-};
+const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+const MONTHS = [
+  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+  "Jul", "Ago", "Set", "Out", "Nov", "Dez",
+];
 
-const brandStyle = {
-  display: "flex",
-  alignItems: "baseline",
-  gap: 10,
-  textDecoration: "none",
-};
-
-const brandNameStyle = {
-  fontFamily: "'Sora', sans-serif",
-  fontWeight: 700,
-  fontSize: 22,
-  color: "#ffffff",
-};
-
-const brandSubStyle = {
-  fontFamily: "'Inter', sans-serif",
-  fontWeight: 400,
-  fontSize: 10,
-  color: "#74c69d",
-  textTransform: "uppercase",
-  letterSpacing: "1px",
-};
-
-const linksContainer = {
-  display: "flex",
-  alignItems: "center",
-  gap: 4,
-  marginLeft: "auto",
-};
-
-const linksContainerMobile = {
-  position: "absolute",
-  top: 64,
-  left: 0,
-  right: 0,
-  background: "linear-gradient(135deg, #0d1b2a 0%, #1b4332 100%)",
-  display: "flex",
-  flexDirection: "column",
-  padding: "8px 16px 16px",
-  gap: 4,
-  boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
-  borderTop: "1px solid rgba(255,255,255,0.08)",
-  animation: "fadeIn 0.2s ease",
-};
-
-const linkBase = {
-  display: "flex",
-  alignItems: "center",
-  gap: 8,
-  padding: "8px 16px",
-  borderRadius: 8,
-  textDecoration: "none",
-  fontSize: 14,
-  fontFamily: "'Inter', sans-serif",
-  fontWeight: 500,
-  transition: "all 0.2s ease",
-};
-
-const linkInactive = {
-  ...linkBase,
-  color: "rgba(255,255,255,0.65)",
-  background: "transparent",
-};
-
-const linkActive = {
-  ...linkBase,
-  color: "#ffffff",
-  background: "rgba(255,255,255,0.12)",
-};
-
-const hamburgerStyle = {
-  display: "none",
-  background: "transparent",
-  border: "none",
-  color: "#ffffff",
-  fontSize: 24,
-  cursor: "pointer",
-  marginLeft: "auto",
-  padding: "4px 8px",
-};
+function formatToday() {
+  const d = new Date();
+  const wd = WEEKDAYS[d.getDay()];
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mo = MONTHS[d.getMonth()];
+  return `${wd}, ${dd} ${mo}. ${d.getFullYear()}`;
+}
 
 function Navbar() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const isHome = location.pathname === "/";
-  const isServicos = location.pathname.startsWith("/servico");
-  const isAtendimentos = location.pathname.startsWith("/atendimento");
-
-  const getLinkStyle = (active) => (active ? linkActive : linkInactive);
-
-  const handleLinkClick = () => setMenuOpen(false);
-
-  const links = (
-    <>
-      <Link to="/" style={getLinkStyle(isHome && !isServicos && !isAtendimentos)} onClick={handleLinkClick}>
-        <i className="bi bi-house-door" style={{ fontSize: 16 }}></i>
-        Início
+  const renderLinks = () =>
+    navItems.map((item) => (
+      <Link
+        key={item.to}
+        to={item.to}
+        className={`nav-link${item.match(location.pathname) ? " active" : ""}`}
+        onClick={() => setMenuOpen(false)}
+      >
+        {item.label}
       </Link>
-      <Link to="/servicos" style={getLinkStyle(isServicos)} onClick={handleLinkClick}>
-        <i className="bi bi-scissors" style={{ fontSize: 16 }}></i>
-        Serviços
-      </Link>
-      <Link to="/atendimentos" style={getLinkStyle(isAtendimentos)} onClick={handleLinkClick}>
-        <i className="bi bi-clipboard-heart" style={{ fontSize: 16 }}></i>
-        Atendimentos
-      </Link>
-    </>
-  );
+    ));
 
   return (
-    <nav style={navStyle}>
-      <div style={containerStyle}>
-        <Link to="/" style={brandStyle}>
-          <span style={brandNameStyle}>PetShop</span>
-          <span style={brandSubStyle}>Gestão</span>
-        </Link>
+    <nav className="appnav">
+      <Link to="/" className="nav-brand">
+        PetShop Gestão
+      </Link>
 
-        {/* Desktop links */}
-        <div className="nav-links-desktop" style={linksContainer}>
-          {links}
-        </div>
+      <div className="nav-links">{renderLinks()}</div>
 
-        {/* Hamburger button */}
-        <button
-          className="nav-hamburger"
-          style={hamburgerStyle}
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Menu"
-        >
-          <i className={`bi ${menuOpen ? "bi-x-lg" : "bi-list"}`}></i>
-        </button>
+      <span className="nav-date">{formatToday()}</span>
 
-        {/* Mobile dropdown */}
-        {menuOpen && (
-          <div className="nav-links-mobile" style={linksContainerMobile}>
-            {links}
-          </div>
-        )}
-      </div>
+      <button
+        className="nav-toggle"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Menu"
+      >
+        <i className={`bi ${menuOpen ? "bi-x-lg" : "bi-list"}`}></i>
+      </button>
 
-      {/* Inline responsive styles */}
+      {menuOpen && <div className="nav-links-mobile">{renderLinks()}</div>}
+
       <style>{`
-        @media (max-width: 768px) {
-          .nav-links-desktop { display: none !important; }
-          .nav-hamburger { display: block !important; }
+        .appnav {
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          background: var(--color-nav-bg);
+          height: 44px;
+          display: flex;
+          align-items: center;
+          gap: 32px;
+          padding: 0 32px;
         }
-        @media (min-width: 769px) {
-          .nav-links-mobile { display: none !important; }
-          .nav-hamburger { display: none !important; }
+        .nav-brand {
+          font-size: 14px;
+          font-weight: 600;
+          color: #ffffff;
+          letter-spacing: 0.01em;
+          text-decoration: none;
+        }
+        .nav-links {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+        }
+        .nav-link {
+          font-size: 13px;
+          font-weight: 400;
+          color: var(--color-nav-text);
+          text-decoration: none;
+        }
+        .nav-link:hover { color: var(--color-nav-active); }
+        .nav-link.active { color: var(--color-nav-active); font-weight: 500; }
+        .nav-date {
+          margin-left: auto;
+          font-size: 12px;
+          color: var(--color-nav-text);
+          opacity: 0.7;
+          white-space: nowrap;
+        }
+        .nav-toggle {
+          display: none;
+          margin-left: auto;
+          background: transparent;
+          border: none;
+          color: #ffffff;
+          font-size: 20px;
+          cursor: pointer;
+          padding: 2px 4px;
+        }
+        .nav-links-mobile {
+          display: none;
+          position: absolute;
+          top: 44px;
+          left: 0;
+          right: 0;
+          flex-direction: column;
+          gap: 0;
+          background: var(--color-nav-bg);
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 4px 32px 10px;
+          animation: fadeIn 0.15s ease;
+        }
+        .nav-links-mobile .nav-link { padding: 9px 0; }
+        @media (max-width: 640px) {
+          .appnav { gap: 16px; padding: 0 16px; }
+          .nav-links, .nav-date { display: none; }
+          .nav-toggle { display: block; }
+          .nav-links-mobile { display: flex; padding: 4px 16px 10px; }
         }
       `}</style>
     </nav>
