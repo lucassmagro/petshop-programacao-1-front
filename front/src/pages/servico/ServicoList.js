@@ -144,14 +144,14 @@ function ServicoList() {
                       to={`/servico/editar/${s.id}`}
                       className="btn-link"
                     >
-                      Editar
+                      <i className="bi bi-pencil" style={{ marginRight: 4 }}></i>Editar
                     </Link>
                     <span className="action-separator">·</span>
                     <button
                       onClick={() => handleDeletar(s.id)}
                       className="btn-link btn-link-danger"
                     >
-                      Excluir
+                      <i className="bi bi-trash" style={{ marginRight: 4 }}></i>Excluir
                     </button>
                   </td>
                 </tr>
