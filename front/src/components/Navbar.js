@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const navItems = [
@@ -29,6 +29,22 @@ function Navbar() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const [isDark, setIsDark] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.body.classList.add("dark-mode");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.body.classList.remove("dark-mode");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
+
+  const toggleTheme = () => setIsDark(!isDark);
+
   const renderLinks = () =>
     navItems.map((item) => (
       <Link
@@ -52,6 +68,15 @@ function Navbar() {
 
         <span className="nav-date">{formatToday()}</span>
 
+        <button 
+          onClick={toggleTheme} 
+          className="theme-toggle"
+          aria-label="Alternar modo escuro"
+          title="Alternar modo escuro"
+        >
+          <i className={`bi ${isDark ? 'bi-sun' : 'bi-moon'}`}></i>
+        </button>
+
         <button
           className="nav-toggle"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -68,7 +93,7 @@ function Navbar() {
           position: sticky;
           top: 0;
           z-index: 1000;
-          background: rgba(255, 255, 255, 0.85);
+          background: var(--color-nav-bg);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
           border-bottom: 1px solid var(--color-border);
@@ -103,7 +128,7 @@ function Navbar() {
           transition: color 0.2s ease;
         }
         .nav-link:hover { color: var(--color-text-primary); }
-        .nav-link.active { color: var(--color-accent); font-weight: 600; }
+        .nav-link.active { color: var(--color-text-primary); font-weight: 700; }
         .nav-date {
           margin-left: auto;
           font-size: 13px;
@@ -113,13 +138,25 @@ function Navbar() {
         }
         .nav-toggle {
           display: none;
-          margin-left: auto;
+          margin-left: 16px;
           background: transparent;
           border: none;
           color: var(--color-text-primary);
           font-size: 20px;
           cursor: pointer;
           padding: 4px;
+        }
+        .theme-toggle {
+          background: transparent;
+          border: none;
+          color: var(--color-text-secondary);
+          font-size: 18px;
+          cursor: pointer;
+          margin-left: 20px;
+          transition: color 0.2s ease;
+        }
+        .theme-toggle:hover {
+          color: var(--color-accent);
         }
         .nav-links-mobile {
           display: none;
@@ -129,7 +166,7 @@ function Navbar() {
           right: 0;
           flex-direction: column;
           gap: 0;
-          background: rgba(255, 255, 255, 0.98);
+          background: var(--color-nav-mobile-bg);
           backdrop-filter: blur(12px);
           border-bottom: 1px solid var(--color-border);
           padding: 8px 32px 16px;

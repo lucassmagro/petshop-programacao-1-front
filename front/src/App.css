@@ -37,8 +37,31 @@
   --space-xl: 24px;
   --space-2xl: 32px;
 
+  /* Navbar BGs */
+  --color-nav-bg: rgba(255, 255, 255, 0.85);
+  --color-nav-mobile-bg: rgba(255, 255, 255, 0.98);
+
   /* Tipografia — Inter */
   --font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body.dark-mode {
+  --color-bg: #121212;
+  --color-surface: #1E1E1E;
+  --color-border: #333333;
+  --color-border-light: #242424;
+
+  --color-text-primary: #F9FAFB;
+  --color-text-secondary: #9CA3AF;
+  --color-text-muted: #6B7280;
+
+  --color-table-header: #18181B;
+  --color-table-row-hover: #27272A;
+
+  --color-input-bg: #18181B;
+  
+  --color-nav-bg: rgba(30, 30, 30, 0.85);
+  --color-nav-mobile-bg: rgba(30, 30, 30, 0.98);
 }
 
 *,
@@ -217,11 +240,7 @@ body {
 /* Esconder ações até hover na linha - removido no light mode para facilitar visibilidade, 
    ou mantido mais suave */
 .data-table tbody tr .col-actions {
-  opacity: 0.3;
   transition: opacity 0.2s ease;
-}
-.data-table tbody tr:hover .col-actions {
-  opacity: 1;
 }
 
 /* ── Tabelas Premium (Data Grids) ── */
@@ -262,6 +281,10 @@ body {
   transition: background 0.2s ease;
 }
 
+.data-table tbody tr:nth-child(even) td {
+  background: var(--color-bg);
+}
+
 .data-table tbody tr:last-child td {
   border-bottom: none;
 }
@@ -270,7 +293,7 @@ body {
   background: var(--color-table-row-hover);
 }
 
-.col-num {
+.data-table .col-num {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
@@ -283,7 +306,7 @@ body {
   font-weight: 500;
 }
 
-.col-actions {
+.data-table .col-actions {
   text-align: right;
   white-space: nowrap;
 }
