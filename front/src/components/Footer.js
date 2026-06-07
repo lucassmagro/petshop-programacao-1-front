@@ -7,7 +7,15 @@ function Footer() {
         <div style={brandStyle}>
           <span style={logoTextStyle}>PetShop</span>
           <p style={footerTextStyle}>
-            Sistema premium de controle e gestão veterinária.
+            feito com &lt;3 por Lucas Santos Magro |{" "}
+            <a 
+              href="https://github.com/lucassmagro/petshop-programacao-1-front" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ color: "inherit", textDecoration: "underline" }}
+            >
+              Repositório no GitHub
+            </a>
           </p>
         </div>
         <div style={copyStyle}>
